@@ -12,10 +12,12 @@ class nav_bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Container(
+      
       height: 70,
       decoration: const BoxDecoration(
-        color: Color.fromARGB(0, 0, 0, 86), // bleu foncé
+        color: Color.fromARGB(255, 2, 7, 88), // couleur barre de navigation
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
@@ -33,13 +35,14 @@ class nav_bar extends StatelessWidget {
   }
 
   Widget _buildNavItem(IconData icon, int index) {
+    
     return IconButton(
       onPressed: () => onItemTapped(index),
       icon: Icon(
         icon,
         size: 28,
         color: selectedIndex == index
-            ? Colors.blueAccent
+            ? const Color.fromARGB(255, 91, 149, 247)
             : Colors.white,
       ),
     );
