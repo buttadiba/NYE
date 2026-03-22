@@ -14,80 +14,57 @@ class Police extends StatefulWidget {
 }
 
 class _PoliceState extends State<Police> {
-
-  // Position actuelle de l'utilisateur
   LatLng? userLocation;
-
-  // Position sélectionnée sur la carte (marqueur rouge)
   LatLng? selectedLocation;
 
-  // Numéro de téléphone de la police
   final String policePhoneNumber = "80001115";
-
-  // Controller pour la barre de recherche
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getUserLocation(); // récupérer la position au démarrage
+    getUserLocation();
   }
 
-  /// Fonction pour récupérer la position GPS de l'utilisateur
+  // Récupère la position GPS de l'utilisateur
   Future<void> getUserLocation() async {
-
-    // Demande de permission pour accéder à la localisation
-    LocationPermission permission = await Geolocator.requestPermission();
-
-    // Récupérer la position actuelle
+    await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
+        desiredAccuracy: LocationAccuracy.high);
 
-    // Mettre à jour les variables
     setState(() {
       userLocation = LatLng(position.latitude, position.longitude);
-      selectedLocation = userLocation; // par défaut le marqueur est sur la position actuelle
+      selectedLocation = userLocation;
     });
   }
 
-  /// Fonction pour rechercher une adresse via OpenStreetMap Nominatim
+  // Recherche d'adresse via Nominatim
   Future<void> searchAddress(String address) async {
-
     try {
-
-      // Construire l'URL pour la requête Nominatim
       final url = Uri.parse(
           "https://nominatim.openstreetmap.org/search?q=$address&format=json");
-
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+        'User-Agent': 'com.example.nyeprojet',
+      });
 
       if (response.statusCode == 200) {
-
         final data = jsonDecode(response.body);
-
         if (data.isNotEmpty) {
-
-          // Récupérer la première localisation correspondante
           double lat = double.parse(data[0]["lat"]);
           double lon = double.parse(data[0]["lon"]);
-
           setState(() {
-            selectedLocation = LatLng(lat, lon); // déplacer le marqueur
+            selectedLocation = LatLng(lat, lon);
           });
-
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Adresse non trouvée")),
           );
         }
-
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Erreur serveur")),
         );
       }
-
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Erreur lors de la recherche")),
@@ -95,84 +72,55 @@ class _PoliceState extends State<Police> {
     }
   }
 
-  /// Fonction pour appeler la police
+  // Appel de la police
   void callPolice() async {
-
-    final Uri phoneUri = Uri(
-      scheme: 'tel',
-      path: policePhoneNumber,
-    );
-
+    final Uri phoneUri = Uri(scheme: 'tel', path: policePhoneNumber);
     await launchUrl(phoneUri);
   }
 
-  /// Fonction pour envoyer la localisation par SMS
+  // Envoyer la localisation par SMS
   void sendLocation() async {
-
-    if(selectedLocation != null){
-
-      // Création du lien Google Maps avec latitude et longitude
+    if (selectedLocation != null) {
       String link =
           "https://www.google.com/maps?q=${selectedLocation!.latitude},${selectedLocation!.longitude}";
-
       final Uri smsUri = Uri(
         scheme: 'sms',
-        queryParameters: {
-          'body': 'Ma localisation: $link'
-        },
+        queryParameters: {'body': 'Ma localisation: $link'},
       );
-
       await launchUrl(smsUri);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
-    // Si la localisation n'est pas encore récupérée
-    if(userLocation == null){
+    if (userLocation == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-
       appBar: AppBar(
-        title: const Text(
-          "Urgence",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Urgence"),
         backgroundColor: const Color.fromARGB(255, 4, 4, 96),
       ),
-
       body: Stack(
         children: [
-
-          /// Carte interactive
           FlutterMap(
-
             options: MapOptions(
-              initialCenter: userLocation!,
-              initialZoom: 15,
-
-              /// Cliquer sur la carte pour déplacer le marqueur
-              onTap: (tapPosition, point) {
+              center: userLocation!,
+              zoom: 15,
+              onTap: (tap, point) {
                 setState(() {
                   selectedLocation = point;
                 });
               },
             ),
-
             children: [
-
-              /// Couche OpenStreetMap
               TileLayer(
                 urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                userAgentPackageName: 'com.example.app',
+                userAgentPackageName: 'com.example.nyeprojet',
               ),
-
-              /// Marqueur
               MarkerLayer(
                 markers: [
                   Marker(
@@ -184,59 +132,49 @@ class _PoliceState extends State<Police> {
                       color: Colors.red,
                       size: 40,
                     ),
-                  )
+                  ),
                 ],
-              )
+              ),
             ],
           ),
 
-          /// Barre de recherche d'adresse
+          // Barre de recherche
           Positioned(
             top: 10,
             left: 10,
             right: 10,
             child: TextField(
-
               controller: searchController,
-
               decoration: InputDecoration(
                 hintText: "Rechercher un lieu ou une adresse",
                 filled: true,
                 fillColor: Colors.white,
-
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
-
-                  onPressed: () {
-                    searchAddress(searchController.text);
-                  },
+                  onPressed: () => searchAddress(searchController.text),
                 ),
               ),
             ),
           ),
 
-          /// Bouton envoyer localisation par SMS
+          // Bouton envoyer localisation
           Positioned(
             bottom: 20,
             left: 20,
             right: 20,
             child: ElevatedButton(
-
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(vertical: 15)),
               onPressed: sendLocation,
-
               child: const Text(
                 "Envoyer la localisation",
-                style: TextStyle(fontSize: 16,color: Colors.white),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),
 
-          /// le Bouton pour appeler la police
+          // Bouton appeler police
           Positioned(
             bottom: 90,
             right: 20,
@@ -245,8 +183,7 @@ class _PoliceState extends State<Police> {
               onPressed: callPolice,
               child: const Icon(Icons.call),
             ),
-          )
-
+          ),
         ],
       ),
     );

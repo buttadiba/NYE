@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nyeprojet/Screens/urgence.dart';
+import 'package:nyeprojet/Screens/notification_page.dart';
+
 
 
 void main() {
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
       
       ),
-      home:Urgence()
+      home:AlertPage()
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
+import 'police.dart';  
 
 class Urgence extends StatefulWidget {
   const Urgence({super.key});
@@ -9,68 +11,91 @@ class Urgence extends StatefulWidget {
 }
 
 class _UrgenceState extends State<Urgence> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 2; // Pour la nav bar
+
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return; // éviter de recharger la même page
+
     setState(() {
       _selectedIndex = index;
-    });
 
-    // Ici tu peux naviguer vers d'autres pages si tu veux
-    if (index == 0) {
-      print("Notifications");
-    } else if (index == 1) {
-      print("Home");
-    } else if (index == 2) {
-      Navigator.of(context).push(
-    MaterialPageRoute<void>(
-      builder: (context) => const Urgence(),
-    ));
-    }
+      // Navigation vers les pages correspondantes
+      if (index == 0) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AlertPage()),
+        );
+      } else if (index == 1) {
+        print("Home cliqué");
+      } else if (index == 2) {
+        // On reste sur Urgence, donc pas besoin de push
+      }
+    });
   }
+
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double padding = 20;
+    double spacing = 20;
+    int columns = 2;
+
+    // Largeur des containers
+    double totalSpacing = padding * 2 + spacing * (columns - 1);
+    double boxWidth = (screenWidth - totalSpacing) / columns;
+
+    // Hauteur un peu plus grande que largeur (ratio)
+    double boxHeight = boxWidth * 1.5;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 238, 238, 238),
-
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         elevation: 0,
         centerTitle: true,
-        title: Column(
-          children: const [
-            Text(
-              "NYE",
-              style: TextStyle(
-                fontSize: 28,
-                color: Color.fromARGB(255, 2, 7, 88),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              "URGENCES",
-              style: TextStyle(
-                fontSize: 30,
-                color: Color.fromARGB(255, 2, 7, 88),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        title: const Text(
+          "URGENCES",
+          style: TextStyle(
+            fontSize: 30,
+            color: Color.fromARGB(255, 2, 7, 88),
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-
       body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 30,
-          crossAxisSpacing: 30,
-          childAspectRatio: 0.8,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
+        child: GridView(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            crossAxisSpacing: spacing,
+            mainAxisSpacing: spacing,
+            childAspectRatio: boxWidth / boxHeight,
+          ),
           children: [
-            urgenceBox("lib/images/police-car.png", "Police",),
-            urgenceBox("lib/images/fire.png", "Pompier"),
-            urgenceBox("lib/images/ambulance.png", "Ambulance"),
-            urgenceBox("lib/images/lock.png", "Sécurité"),
-            
+            urgenceBox("lib/images/police-car.png", "Police", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const Police()),
+              );
+            }, boxWidth, boxHeight),
+            urgenceBox("lib/images/fire.png", "Pompier", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const Police()),
+              );
+            }, boxWidth, boxHeight),
+            urgenceBox("lib/images/ambulance.png", "Ambulance", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const Police()),
+              );
+            }, boxWidth, boxHeight),
+            urgenceBox("lib/images/lock.png", "Sécurité", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const Police()),
+              );
+            }, boxWidth, boxHeight),
           ],
         ),
       ),
@@ -81,32 +106,38 @@ class _UrgenceState extends State<Urgence> {
     );
   }
 
-  Widget urgenceBox(String image, String title) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 10, 51, 140),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color.fromARGB(255, 9, 28, 74), width: 4),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            image,
-            width: 70,
-          ),
-
-          SizedBox(height: 10),
-
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+  Widget urgenceBox(String image, String title, VoidCallback onTap, double width, double height) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 10, 51, 140),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color.fromARGB(255, 9, 28, 74), width: 4),
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              image,
+              width: 70,
+              height: 70,
             ),
-          ),
-        ],
+            const SizedBox(height: 15),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
