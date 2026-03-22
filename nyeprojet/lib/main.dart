@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nyeprojet/Screens/notification_page.dart';
+import 'package:nyeprojet/Screens/login.dart';
 
 
 
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
       
       ),
-      home:AlertPage()
+      home:  Connexion(),
     );
   }
 }
