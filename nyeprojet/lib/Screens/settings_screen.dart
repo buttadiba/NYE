@@ -1,49 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/widgets/nav_bar.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Réglages',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'AvantGarde',
-        scaffoldBackgroundColor: const Color(0xFFEEF2FF),
-      ),
-      home: const SettingsScreen(),
-    );
-  }
-}
-
-// ── Couleurs Principales, été données 
+// ── Couleurs Principales
 class AppColors {
-  static const richBlack      = Color(0xFF00072D);
-  static const darkGreen      = Color(0xFF051650);
+  static const richBlack       = Color(0xFF00072D);
+  static const darkGreen       = Color(0xFF051650);
   static const bangladeshGreen = Color(0xFF0A2472);
-  static const caribbeanGreen = Color(0xFF123499);
-  static const white          = Color(0xFF5EAF73); 
-  static const pureWhite      = Color(0xFFFFFFFF);
-  static const lightBg        = Color(0xFFEEF2FF);
-  static const divider        = Color(0xFFD0D9F5);
-  static const textDark       = Color(0xFF00072D);
-  static const textMuted      = Color(0xFF6B7FC4);
+  static const caribbeanGreen  = Color(0xFF123499);
+  static const pureWhite       = Color(0xFFFFFFFF);
+  static const lightBg         = Color(0xFFEEF2FF);
+  static const divider         = Color(0xFFD0D9F5);
+  static const textDark        = Color(0xFF00072D);
+  static const textMuted       = Color(0xFF6B7FC4);
 }
 
 // ── Screen ───────────────────────────────────────────────────────────────────
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBg,
-      bottomNavigationBar: const _BottomNav(),
+      bottomNavigationBar: nav_bar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -66,19 +61,18 @@ class SettingsScreen extends StatelessWidget {
                   _SectionLabel('Préférences'),
                   SizedBox(height: 8),
                   _SettingsGroup(items: [
-                    _SettingsTile(icon: Icons.info_outline_rounded,       label: 'À propos de nous'),
-                    _SettingsTile(icon: Icons.palette_outlined,           label: 'Thème'),
-                    _SettingsTile(icon: Icons.emergency_outlined,         label: 'Numéros des urgences', isLast: true),
+                    _SettingsTile(icon: Icons.info_outline_rounded,  label: 'À propos de nous'),
+                    _SettingsTile(icon: Icons.palette_outlined,       label: 'Thème'),
+                    _SettingsTile(icon: Icons.emergency_outlined,     label: 'Numéros des urgences', isLast: true),
                   ]),
                   SizedBox(height: 28),
                   _SectionLabel('Assistance'),
                   SizedBox(height: 8),
                   _SettingsGroup(items: [
-                    _SettingsTile(icon: Icons.devices_outlined,           label: 'Vos dispositifs'),
-                    _SettingsTile(icon: Icons.help_outline_rounded,       label: "Centre d'aide", isLast: true),
+                    _SettingsTile(icon: Icons.devices_outlined,      label: 'Vos dispositifs'),
+                    _SettingsTile(icon: Icons.help_outline_rounded,  label: "Centre d'aide", isLast: true),
                   ]),
                   SizedBox(height: 32),
-                  _LogoutButton(),
                   SizedBox(height: 16),
                 ],
               ),
@@ -139,7 +133,6 @@ class _ProfileCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Avatar
           Container(
             width: 56,
             height: 56,
@@ -292,113 +285,6 @@ class _SettingsTile extends StatelessWidget {
             color: AppColors.divider,
           ),
       ],
-    );
-  }
-}
-
-// ── Logout Button ─────────────────────────────────────────────────────────────
-class _LogoutButton extends StatelessWidget {
-  const _LogoutButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.bangladeshGreen, AppColors.caribbeanGreen],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.bangladeshGreen.withOpacity(0.35),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {},
-          borderRadius: BorderRadius.circular(16),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
-            child: Center(
-              child: Text(
-                'Se déconnecter',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Bottom Navigation ─────────────────────────────────────────────────────────
-class _BottomNav extends StatelessWidget {
-  const _BottomNav();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.richBlack,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.richBlack.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _NavItem(icon: Icons.notifications_none_rounded, isActive: false),
-              _NavItem(icon: Icons.home_outlined, isActive: false),
-              _NavItem(icon: Icons.error_outline_rounded, isActive: true),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final bool isActive;
-
-  const _NavItem({required this.icon, required this.isActive});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: isActive
-          ? BoxDecoration(
-              color: AppColors.bangladeshGreen.withOpacity(0.3),
-              shape: BoxShape.circle,
-            )
-          : null,
-      child: Icon(
-        icon,
-        color: isActive ? AppColors.pureWhite : AppColors.textMuted,
-        size: 26,
-      ),
     );
   }
 }
