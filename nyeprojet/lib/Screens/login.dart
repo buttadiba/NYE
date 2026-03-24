@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/notification_page.dart';
 
 class Connexion extends StatefulWidget {
   const Connexion({super.key});
@@ -28,7 +29,7 @@ class _ConnexionState extends State<Connexion> {
                   const SizedBox(height: 30),
 
                   const Text(
-                    "Connexion",
+                    "CONNEXION",
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -97,16 +98,42 @@ class _ConnexionState extends State<Connexion> {
 
                   const SizedBox(height: 20),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        print(emailController.text);
-                        print(passwordController.text);
-                      },
-                      child: const Text("Se connecter"),
+                  Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => AlertPage()),
+                          );
+                        },
+                        child: Container(
+                          width: 220,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 1, 32, 59),
+                                Color.fromARGB(255, 7, 63, 147),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.5,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            "Se connecter",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
 
                   const SizedBox(height: 20),
 
