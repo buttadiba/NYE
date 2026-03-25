@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
+import 'package:nyeprojet/Screens/settings_screen.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
 import 'police.dart';  
 
@@ -14,24 +16,37 @@ class _UrgenceState extends State<Urgence> {
   int _selectedIndex = 2; // Pour la nav bar
 
   void _onItemTapped(int index) {
-    if (_selectedIndex == index) return; // éviter de recharger la même page
+  setState(() {
+    _selectedIndex = index;
+  });
 
-    setState(() {
-      _selectedIndex = index;
-
-      // Navigation vers les pages correspondantes
-      if (index == 0) {
-        Navigator.pushReplacement(
+  switch(index) {
+    case 0:
+      Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const AlertPage()),
+          MaterialPageRoute(builder: (_) =>  NyeHomePage()),
         );
-      } else if (index == 1) {
-        print("Home cliqué");
-      } else if (index == 2) {
-        // On reste sur Urgence, donc pas besoin de push
-      }
-    });
+      break;
+    case 1:
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) =>  AlertPage()),
+        );
+      break;
+    case 2:
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) =>  Urgence())
+        );
+      break;
+    case 3:
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => SettingsScreen())
+        );
+      break;
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +114,7 @@ class _UrgenceState extends State<Urgence> {
           ],
         ),
       ),
-      bottomNavigationBar: nav_bar(
+      bottomNavigationBar: NavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),

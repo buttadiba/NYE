@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/home.dart';
+import 'package:nyeprojet/Screens/settings_screen.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
 import 'urgence.dart'; //  page Urgence
 
@@ -25,29 +27,40 @@ class AlertPage extends StatefulWidget {
 }
 
 class _AlertPageState extends State<AlertPage> {
-  int _selectedIndex = 0; // Pour la nav bar
+  int _selectedIndex = 1; // Pour la nav bar
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+  setState(() {
+    _selectedIndex = index;
+  });
 
-      // Navigation vers les pages correspondantes
-      if (index == 0) {
-        Navigator.push(
+  switch(index) {
+    case 0:
+      Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const AlertPage()),
+          MaterialPageRoute(builder: (_) =>  NyeHomePage()),
         );
-      } else if (index == 1) {
-        print("Home cliqué");
-      } else if (index == 2) {
-        Navigator.push(
+      break;
+    case 1:
+      Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const Urgence()),
+          MaterialPageRoute(builder: (_) =>  AlertPage()),
         );
-      }
-    });
+      break;
+    case 2:
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) =>  Urgence())
+        );
+      break;
+    case 3:
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => SettingsScreen())
+        );
+      break;
   }
-
+}
   final List<Map<String, dynamic>> _alerts = [
     {
       "title": "Intrusion détectée",
@@ -109,7 +122,7 @@ class _AlertPageState extends State<AlertPage> {
           );
         },
       ),
-      bottomNavigationBar: nav_bar(
+      bottomNavigationBar: NavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),

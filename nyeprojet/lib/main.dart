@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/login.dart';
 
-import 'package:nyeprojet/Screens/settings_screen.dart';
 
 
 
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
       
       ),
-      home:  SettingsScreen(),
+      home:  Connexion(),
     );
   }
 }

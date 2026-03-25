@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nyeprojet/Screens/notification_page.dart';
+import 'package:nyeprojet/Screens/home.dart';
+
 
 class Connexion extends StatefulWidget {
   const Connexion({super.key});
@@ -103,7 +104,7 @@ class _ConnexionState extends State<Connexion> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => AlertPage()),
+                            MaterialPageRoute(builder: (_) => NyeHomePage()),
                           );
                         },
                         child: Container(
