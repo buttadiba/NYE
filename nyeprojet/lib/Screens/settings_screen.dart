@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:nyeprojet/Screens/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/urgence.dart';
@@ -27,39 +30,64 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   int _selectedIndex = 3;
+    String name = "";
+    String email = "";
+
+    @override
+    void initState() {
+      super.initState();
+      loadUserData();
+    }
+
+    Future<void> loadUserData() async {
+      final prefs = await SharedPreferences.getInstance();
+
+      setState(() {
+        name = prefs.getString('name') ?? "Utilisateur";
+        email = prefs.getString('email') ?? "email@gmail.com";
+      });
+    }
 
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-  });
+    setState(() {
+      _selectedIndex = index;
+    });
 
-  switch(index) {
-    case 0:
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) =>  NyeHomePage()),
-        );
-      break;
-    case 1:
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) =>  AlertPage()),
-        );
-      break;
-    case 2:
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) =>  Urgence())
-        );
-      break;
-    case 3:
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => SettingsScreen())
-        );
-      break;
+    switch(index) {
+      case 0:
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => NyeHomePage()),
+          );
+        break;
+      case 1:
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AlertPage()),
+          );
+        break;
+      case 2:
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => Urgence())
+          );
+        break;
+      case 3:
+        // On est déjà sur la page profil
+        break;
+    }
   }
-}
+
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('email');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => Connexion()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,34 +104,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                children: const [
-                  _ProfileCard(),
-                  SizedBox(height: 28),
-                  _SectionLabel('Mon compte'),
-                  SizedBox(height: 8),
-                  _SettingsGroup(items: [
+                children: [
+                  _ProfileCard(name: name, email: email, onLogout: logout),
+                  const SizedBox(height: 28),
+                  const _SectionLabel('Mon compte'),
+                  const SizedBox(height: 8),
+                  const _SettingsGroup(items: [
                     _SettingsTile(icon: Icons.person_outline_rounded,    label: 'Gérer mon profil'),
                     _SettingsTile(icon: Icons.lock_outline_rounded,       label: 'Mot de passe et sécurité'),
                     _SettingsTile(icon: Icons.notifications_none_rounded, label: 'Notifications'),
                     _SettingsTile(icon: Icons.language_rounded,           label: 'Langues', isLast: true),
                   ]),
-                  SizedBox(height: 28),
-                  _SectionLabel('Préférences'),
-                  SizedBox(height: 8),
-                  _SettingsGroup(items: [
+                  const SizedBox(height: 28),
+                  const _SectionLabel('Préférences'),
+                  const SizedBox(height: 8),
+                  const _SettingsGroup(items: [
                     _SettingsTile(icon: Icons.info_outline_rounded,  label: 'À propos de nous'),
                     _SettingsTile(icon: Icons.palette_outlined,       label: 'Thème'),
                     _SettingsTile(icon: Icons.emergency_outlined,     label: 'Numéros des urgences', isLast: true),
                   ]),
-                  SizedBox(height: 28),
-                  _SectionLabel('Assistance'),
-                  SizedBox(height: 8),
-                  _SettingsGroup(items: [
+                  const SizedBox(height: 28),
+                  const _SectionLabel('Assistance'),
+                  const SizedBox(height: 8),
+                  const _SettingsGroup(items: [
                     _SettingsTile(icon: Icons.devices_outlined,      label: 'Vos dispositifs'),
                     _SettingsTile(icon: Icons.help_outline_rounded,  label: "Centre d'aide", isLast: true),
                   ]),
-                  SizedBox(height: 32),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -143,7 +171,11 @@ class _AppBar extends StatelessWidget {
 
 // ── Profile Card ─────────────────────────────────────────────────────────────
 class _ProfileCard extends StatelessWidget {
-  const _ProfileCard();
+  final String name;
+  final String email;
+  final VoidCallback onLogout;
+
+  const _ProfileCard({required this.name, required this.email, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -161,48 +193,63 @@ class _ProfileCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.bangladeshGreen, AppColors.caribbeanGreen],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.bangladeshGreen, AppColors.caribbeanGreen],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.person_rounded, color: Colors.white, size: 30),
               ),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.person_rounded, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Oumar Doumbia',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textDark,
-                    letterSpacing: 0.2,
-                  ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name.isNotEmpty ? name : name,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      email.isNotEmpty ? email : email,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  'doumbiaoumar02006@gmail.com',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 22),
+            ],
           ),
-          Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 22),
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: onLogout,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text("Déconnexion"),
+          )
         ],
       ),
     );

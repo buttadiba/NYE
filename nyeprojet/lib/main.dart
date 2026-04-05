@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  runApp(MaterialApp(
+    home: token != null ? NyeHomePage() : Connexion(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
