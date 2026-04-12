@@ -46,7 +46,11 @@ class _InscriptionState extends State<Inscription> {
         return;
       }
 
+<<<<<<< HEAD
     var url = "http://192.168.1.17:5000/register";
+=======
+    var url = "http://192.168.1.20:5000/register";
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
     try {
       final response = await http.post(
@@ -66,6 +70,7 @@ class _InscriptionState extends State<Inscription> {
         // 🔹 Stocker le token JWT dans SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', data['token'] ?? "");
+<<<<<<< HEAD
         if (data['user'] != null) {
           await prefs.setString('email', data['user']['email']);
         } else {
@@ -73,6 +78,9 @@ class _InscriptionState extends State<Inscription> {
             errorMessage = data['error'] ?? "Erreur inconnue";
           });
         }
+=======
+        await prefs.setString('email', data['user']['email']);
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
         // 🔹 Naviguer vers l'accueil
         Navigator.pushReplacement(

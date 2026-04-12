@@ -7,7 +7,10 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+<<<<<<< HEAD
   jni
+=======
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

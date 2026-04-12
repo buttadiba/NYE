@@ -28,6 +28,7 @@ class _PoliceState extends State<Police> {
 
   // Récupère la position GPS de l'utilisateur
   Future<void> getUserLocation() async {
+<<<<<<< HEAD
     LocationPermission permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.denied) {
@@ -39,6 +40,9 @@ class _PoliceState extends State<Police> {
       return;
     }
 
+=======
+    await Geolocator.requestPermission();
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
@@ -118,8 +122,13 @@ class _PoliceState extends State<Police> {
         children: [
           FlutterMap(
             options: MapOptions(
+<<<<<<< HEAD
               initialCenter: userLocation!,
               initialZoom: 15,
+=======
+              center: userLocation!,
+              zoom: 15,
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
               onTap: (tap, point) {
                 setState(() {
                   selectedLocation = point;

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+import 'package:http/http.dart' as http;
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/home.dart';

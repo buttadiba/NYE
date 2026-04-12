@@ -1,9 +1,15 @@
 from flask import Flask
+<<<<<<< HEAD
 from models import db, bcrypt  
 from routes import routes      
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
+=======
+from models import db, bcrypt  # Assure-toi que models.py existe et contient db, bcrypt
+from routes import routes      # Ton routes.py avec /login et /register
+
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 app = Flask(__name__)
 
 # 🔹 Configuration base de données

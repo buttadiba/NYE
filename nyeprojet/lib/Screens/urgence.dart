@@ -3,7 +3,11 @@ import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/settings_screen.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
+<<<<<<< HEAD
 import 'emergency-page.dart';
+=======
+import 'police.dart';  
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
 class Urgence extends StatefulWidget {
   const Urgence({super.key});
@@ -89,28 +93,46 @@ class _UrgenceState extends State<Urgence> {
           children: [
             urgenceBox("lib/images/police-car.png", "Police", () {
               Navigator.push(
+<<<<<<< HEAD
               context,
               MaterialPageRoute(
                 builder: (_) => const EmergencyPage(type: "police"),
               ),
             );
+=======
+                context,
+                MaterialPageRoute(builder: (_) => const Police()),
+              );
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
             }, boxWidth, boxHeight),
             urgenceBox("lib/images/fire.png", "Pompier", () {
               Navigator.push(
                 context,
+<<<<<<< HEAD
                 MaterialPageRoute(builder: (_) => const EmergencyPage(type: "Pompier")),
+=======
+                MaterialPageRoute(builder: (_) => const Police()),
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
               );
             }, boxWidth, boxHeight),
             urgenceBox("lib/images/ambulance.png", "Ambulance", () {
               Navigator.push(
                 context,
+<<<<<<< HEAD
                 MaterialPageRoute(builder: (_) => const EmergencyPage(type: "Ambulance")),
+=======
+                MaterialPageRoute(builder: (_) => const Police()),
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
               );
             }, boxWidth, boxHeight),
             urgenceBox("lib/images/lock.png", "Sécurité", () {
               Navigator.push(
                 context,
+<<<<<<< HEAD
                 MaterialPageRoute(builder: (_) => const EmergencyPage(type: "protection civile")),
+=======
+                MaterialPageRoute(builder: (_) => const Police()),
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
               );
             }, boxWidth, boxHeight),
           ],

@@ -43,7 +43,11 @@ class _ConnexionState extends State<Connexion> {
   }
 
   // 🔹 Appel au backend
+<<<<<<< HEAD
   var url = "http://192.168.1.17:5000/login";
+=======
+  var url = "http://192.168.1.20:5000/login";
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
   try {
     final response = await http.post(
       Uri.parse(url),
@@ -60,7 +64,11 @@ class _ConnexionState extends State<Connexion> {
       final user = data['user'];
 
     final prefs = await SharedPreferences.getInstance();
+<<<<<<< HEAD
     await prefs.setString('token', token);
+=======
+    await prefs.setString('jwt_token', token);
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
     await prefs.setString('name', user['name']);
     await prefs.setString('email', user['email']);
       print("Connexion réussie ! Token: $token");

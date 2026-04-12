@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/urgence.dart';
 import 'settings_screen.dart'; // 
+=======
+import 'package:nyeprojet/Screens/notification_page.dart';
+import 'package:nyeprojet/Screens/urgence.dart';
+import 'settings_screen.dart'; // ton écran SettingsScreen
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 import '../widgets/nav_bar.dart'; // ton widget nav_bar
 
 class NyeHomePage extends StatefulWidget {
@@ -14,6 +20,7 @@ class NyeHomePage extends StatefulWidget {
 }
 
 class _NyeHomePageState extends State<NyeHomePage> {
+<<<<<<< HEAD
   void logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
@@ -42,12 +49,18 @@ class _NyeHomePageState extends State<NyeHomePage> {
     }
   }
   
+=======
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
   int _selectedIndex = 0;
 
   // --- Variables Home ---
   bool _isNyeOpen = false;
   bool _isPowerSaveOn = false;
+<<<<<<< HEAD
   final int _batteryLevel = 100;
+=======
+  int _batteryLevel = 100;
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
   void _onItemTapped(int index) {
     setState(() {
@@ -56,10 +69,17 @@ class _NyeHomePageState extends State<NyeHomePage> {
   
     switch(index) {
       case 0:
+<<<<<<< HEAD
         setState(() {
           _selectedIndex = 0;
         });
         break;
+=======
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => NyeHomePage()),
+          );
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
       case 1:
         Navigator.push(
             context,
@@ -105,7 +125,11 @@ class _NyeHomePageState extends State<NyeHomePage> {
   @override
   Widget build(BuildContext context) {
     // --- Liste des pages ---
+<<<<<<< HEAD
     final List<Widget> pages = [
+=======
+    final List<Widget> _pages = [
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
       _homePage(),        // Home
       _alertPage(),       // Alert
       _urgencePage(),     // Urgence
@@ -116,7 +140,11 @@ class _NyeHomePageState extends State<NyeHomePage> {
       backgroundColor: const Color(0xFFEEF2FF),
       body: IndexedStack(
         index: _selectedIndex,
+<<<<<<< HEAD
         children: pages,
+=======
+        children: _pages,
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
       ),
       bottomNavigationBar: NavBar(
         selectedIndex: _selectedIndex,
@@ -132,6 +160,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
     Color nyeCircleColor = _isNyeOpen ? Colors.green : Colors.red;
 
     return SafeArea(
+<<<<<<< HEAD
       
       child: SingleChildScrollView(
 
@@ -145,6 +174,13 @@ class _NyeHomePageState extends State<NyeHomePage> {
                 onPressed: logout,
               ),
             ),
+=======
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
             Text(
               statusText,
               style: const TextStyle(
@@ -279,7 +315,11 @@ class _NyeHomePageState extends State<NyeHomePage> {
               Switch(
                 value: _isPowerSaveOn,
                 onChanged: _togglePowerSave,
+<<<<<<< HEAD
                 activeThumbColor: Colors.white,
+=======
+                activeColor: Colors.white,
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
                 activeTrackColor: Colors.blueAccent,
               ),
             ],
@@ -293,4 +333,8 @@ class _NyeHomePageState extends State<NyeHomePage> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
