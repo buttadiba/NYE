@@ -3,11 +3,7 @@ import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/settings_screen.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
-<<<<<<< HEAD
 import 'emergency-page.dart';
-=======
-import 'police.dart';  
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
 class Urgence extends StatefulWidget {
   const Urgence({super.key});
@@ -20,37 +16,31 @@ class _UrgenceState extends State<Urgence> {
   int _selectedIndex = 2; // Pour la nav bar
 
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-  });
+    setState(() {
+      _selectedIndex = index;
+    });
 
-  switch(index) {
-    case 0:
-      Navigator.push(
+    switch (index) {
+      case 0:
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) =>  NyeHomePage()),
+          MaterialPageRoute(builder: (_) => NyeHomePage()),
         );
-      break;
-    case 1:
-      Navigator.push(
+        break;
+      case 1:
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AlertPage()));
+        break;
+      case 2:
+        Navigator.push(context, MaterialPageRoute(builder: (_) => Urgence()));
+        break;
+      case 3:
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) =>  AlertPage()),
+          MaterialPageRoute(builder: (_) => SettingsScreen()),
         );
-      break;
-    case 2:
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) =>  Urgence())
-        );
-      break;
-    case 3:
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => SettingsScreen())
-        );
-      break;
+        break;
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -91,50 +81,63 @@ class _UrgenceState extends State<Urgence> {
             childAspectRatio: boxWidth / boxHeight,
           ),
           children: [
-            urgenceBox("lib/images/police-car.png", "Police", () {
-              Navigator.push(
-<<<<<<< HEAD
-              context,
-              MaterialPageRoute(
-                builder: (_) => const EmergencyPage(type: "police"),
-              ),
-            );
-=======
-                context,
-                MaterialPageRoute(builder: (_) => const Police()),
-              );
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-            }, boxWidth, boxHeight),
-            urgenceBox("lib/images/fire.png", "Pompier", () {
-              Navigator.push(
-                context,
-<<<<<<< HEAD
-                MaterialPageRoute(builder: (_) => const EmergencyPage(type: "Pompier")),
-=======
-                MaterialPageRoute(builder: (_) => const Police()),
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-              );
-            }, boxWidth, boxHeight),
-            urgenceBox("lib/images/ambulance.png", "Ambulance", () {
-              Navigator.push(
-                context,
-<<<<<<< HEAD
-                MaterialPageRoute(builder: (_) => const EmergencyPage(type: "Ambulance")),
-=======
-                MaterialPageRoute(builder: (_) => const Police()),
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-              );
-            }, boxWidth, boxHeight),
-            urgenceBox("lib/images/lock.png", "Sécurité", () {
-              Navigator.push(
-                context,
-<<<<<<< HEAD
-                MaterialPageRoute(builder: (_) => const EmergencyPage(type: "protection civile")),
-=======
-                MaterialPageRoute(builder: (_) => const Police()),
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-              );
-            }, boxWidth, boxHeight),
+            urgenceBox(
+              "lib/images/police-car.png",
+              "Police",
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const EmergencyPage(type: "police"),
+                  ),
+                );
+              },
+              boxWidth,
+              boxHeight,
+            ),
+            urgenceBox(
+              "lib/images/fire.png",
+              "Pompier",
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const EmergencyPage(type: "Pompier"),
+                  ),
+                );
+              },
+              boxWidth,
+              boxHeight,
+            ),
+            urgenceBox(
+              "lib/images/ambulance.png",
+              "Ambulance",
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const EmergencyPage(type: "Ambulance"),
+                  ),
+                );
+              },
+              boxWidth,
+              boxHeight,
+            ),
+            urgenceBox(
+              "lib/images/lock.png",
+              "Sécurité",
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const EmergencyPage(type: "protection civile"),
+                  ),
+                );
+              },
+              boxWidth,
+              boxHeight,
+            ),
           ],
         ),
       ),
@@ -145,7 +148,13 @@ class _UrgenceState extends State<Urgence> {
     );
   }
 
-  Widget urgenceBox(String image, String title, VoidCallback onTap, double width, double height) {
+  Widget urgenceBox(
+    String image,
+    String title,
+    VoidCallback onTap,
+    double width,
+    double height,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -154,17 +163,16 @@ class _UrgenceState extends State<Urgence> {
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 10, 51, 140),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color.fromARGB(255, 9, 28, 74), width: 4),
+          border: Border.all(
+            color: const Color.fromARGB(255, 9, 28, 74),
+            width: 4,
+          ),
         ),
         padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              image,
-              width: 70,
-              height: 70,
-            ),
+            Image.asset(image, width: 70, height: 70),
             const SizedBox(height: 15),
             Text(
               title,

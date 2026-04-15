@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/urgence.dart';
-import 'settings_screen.dart'; // 
-=======
-import 'package:nyeprojet/Screens/notification_page.dart';
-import 'package:nyeprojet/Screens/urgence.dart';
-import 'settings_screen.dart'; // ton écran SettingsScreen
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
+import 'settings_screen.dart'; //
 import '../widgets/nav_bar.dart'; // ton widget nav_bar
 
 class NyeHomePage extends StatefulWidget {
@@ -20,8 +14,7 @@ class NyeHomePage extends StatefulWidget {
 }
 
 class _NyeHomePageState extends State<NyeHomePage> {
-<<<<<<< HEAD
-  void logout() async {
+  Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
 
@@ -37,6 +30,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
     super.initState();
     checkUser();
   }
+
   void checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -48,58 +42,38 @@ class _NyeHomePageState extends State<NyeHomePage> {
       );
     }
   }
-  
-=======
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
+
   int _selectedIndex = 0;
 
   // --- Variables Home ---
   bool _isNyeOpen = false;
   bool _isPowerSaveOn = false;
-<<<<<<< HEAD
   final int _batteryLevel = 100;
-=======
-  int _batteryLevel = 100;
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-  
-    switch(index) {
+
+    switch (index) {
       case 0:
-<<<<<<< HEAD
         setState(() {
           _selectedIndex = 0;
         });
         break;
-=======
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => NyeHomePage()),
-          );
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
       case 1:
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => AlertPage()),
-          );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AlertPage()));
         break;
       case 2:
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) =>  Urgence())
-          );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => Urgence()));
         break;
       case 3:
         Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => SettingsScreen())
-          );
+          context,
+          MaterialPageRoute(builder: (_) => SettingsScreen()),
+        );
         break;
     }
-
   }
 
   void _toggleNyeOpen() {
@@ -125,27 +99,16 @@ class _NyeHomePageState extends State<NyeHomePage> {
   @override
   Widget build(BuildContext context) {
     // --- Liste des pages ---
-<<<<<<< HEAD
     final List<Widget> pages = [
-=======
-    final List<Widget> _pages = [
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-      _homePage(),        // Home
-      _alertPage(),       // Alert
-      _urgencePage(),     // Urgence
+      _homePage(), // Home
+      _alertPage(), // Alert
+      _urgencePage(), // Urgence
       const SettingsScreen(), // Settings
     ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFEEF2FF),
-      body: IndexedStack(
-        index: _selectedIndex,
-<<<<<<< HEAD
-        children: pages,
-=======
-        children: _pages,
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-      ),
+      body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -155,15 +118,14 @@ class _NyeHomePageState extends State<NyeHomePage> {
 
   // ----------------- Home Page -----------------
   Widget _homePage() {
-    String statusText = _isNyeOpen ? "Votre œil est ouvert" : "Votre œil est fermé";
+    String statusText = _isNyeOpen
+        ? "Votre œil est ouvert"
+        : "Votre œil est fermé";
     String nyeStatusText = _isNyeOpen ? "ON" : "OFF";
     Color nyeCircleColor = _isNyeOpen ? Colors.green : Colors.red;
 
     return SafeArea(
-<<<<<<< HEAD
-      
       child: SingleChildScrollView(
-
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(
           children: [
@@ -174,17 +136,13 @@ class _NyeHomePageState extends State<NyeHomePage> {
                 onPressed: logout,
               ),
             ),
-=======
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
             Text(
               statusText,
               style: const TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF051650)),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF051650),
+              ),
             ),
             const SizedBox(height: 30),
             GestureDetector(
@@ -208,7 +166,10 @@ class _NyeHomePageState extends State<NyeHomePage> {
                   child: Text(
                     nyeStatusText,
                     style: const TextStyle(
-                        fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -299,10 +260,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
         children: [
           const Text(
             "Optimisation de la batterie:",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Row(
@@ -315,11 +273,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
               Switch(
                 value: _isPowerSaveOn,
                 onChanged: _togglePowerSave,
-<<<<<<< HEAD
                 activeThumbColor: Colors.white,
-=======
-                activeColor: Colors.white,
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
                 activeTrackColor: Colors.blueAccent,
               ),
             ],
@@ -333,8 +287,4 @@ class _NyeHomePageState extends State<NyeHomePage> {
       ),
     );
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f

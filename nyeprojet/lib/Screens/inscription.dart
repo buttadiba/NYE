@@ -24,33 +24,29 @@ class _InscriptionState extends State<Inscription> {
     final password = passwordController.text.trim();
 
     // 🔹 Validation simple côté Flutter
-      if (name.isEmpty || email.isEmpty || password.isEmpty) {
-        setState(() {
-          errorMessage = "Tous les champs sont requis.";
-        });
-        return;
-      }
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      setState(() {
+        errorMessage = "Tous les champs sont requis.";
+      });
+      return;
+    }
 
-      // Vérifier que l'email se termine par @gmail.com
-      if (!email.endsWith("@gmail.com")) {
-        setState(() {
-          errorMessage = "L'email doit se terminer par @gmail.com";
-        });
-        return;
-      }
+    // Vérifier que l'email se termine par @gmail.com
+    if (!email.endsWith("@gmail.com")) {
+      setState(() {
+        errorMessage = "L'email doit se terminer par @gmail.com";
+      });
+      return;
+    }
 
-      if (password.length < 6) {
-        setState(() {
-          errorMessage = "Le mot de passe doit avoir au moins 6 caractères.";
-        });
-        return;
-      }
+    if (password.length < 6) {
+      setState(() {
+        errorMessage = "Le mot de passe doit avoir au moins 6 caractères.";
+      });
+      return;
+    }
 
-<<<<<<< HEAD
-    var url = "http://192.168.1.17:5000/register";
-=======
-    var url = "http://192.168.1.20:5000/register";
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
+    var url = "http://192.168.1.53:5000/register";
 
     try {
       final response = await http.post(
@@ -60,7 +56,7 @@ class _InscriptionState extends State<Inscription> {
           "name": name,
           "email": email,
           "password": password,
-          "role": "USER"
+          "role": "USER",
         }),
       );
 
@@ -70,7 +66,6 @@ class _InscriptionState extends State<Inscription> {
         // 🔹 Stocker le token JWT dans SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', data['token'] ?? "");
-<<<<<<< HEAD
         if (data['user'] != null) {
           await prefs.setString('email', data['user']['email']);
         } else {
@@ -78,9 +73,6 @@ class _InscriptionState extends State<Inscription> {
             errorMessage = data['error'] ?? "Erreur inconnue";
           });
         }
-=======
-        await prefs.setString('email', data['user']['email']);
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 
         // 🔹 Naviguer vers l'accueil
         Navigator.pushReplacement(
@@ -217,7 +209,10 @@ class _InscriptionState extends State<Inscription> {
               left: 20,
               right: 20,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 20,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),

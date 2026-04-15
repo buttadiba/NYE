@@ -18,78 +18,74 @@ class _ConnexionState extends State<Connexion> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> loginUser() async {
-  String email = emailController.text.trim();
-  String password = passwordController.text.trim();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
-  // 🔹 Validation simple
-  if (email.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Veuillez entrer votre email")),
-    );
-    return;
-  }
-  // Vérifier que l'email se termine par @gmail.com
+    // 🔹 Validation simple
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez entrer votre email")),
+      );
+      return;
+    }
+    // Vérifier que l'email se termine par @gmail.com
     if (!email.endsWith("@gmail.com")) {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("L'email doit se terminer par @gmail.com")),
-    );
-        return;
-      }
-  if (password.isEmpty || password.length < 6) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Mot de passe doit avoir au moins 6 caractères")),
-    );
-    return;
-  }
-
-  // 🔹 Appel au backend
-<<<<<<< HEAD
-  var url = "http://192.168.1.17:5000/login";
-=======
-  var url = "http://192.168.1.20:5000/login";
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-  try {
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "password": password}),
-    );
-
-    print("Status code: ${response.statusCode}");
-    print("Body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final token = data['token'];
-      final user = data['user'];
-
-    final prefs = await SharedPreferences.getInstance();
-<<<<<<< HEAD
-    await prefs.setString('token', token);
-=======
-    await prefs.setString('jwt_token', token);
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
-    await prefs.setString('name', user['name']);
-    await prefs.setString('email', user['email']);
-      print("Connexion réussie ! Token: $token");
-
-      // 🔹 Naviguer vers le dashboard
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => NyeHomePage()),
+        const SnackBar(
+          content: Text("L'email doit se terminer par @gmail.com"),
+        ),
       );
-    } else {
-      final data = jsonDecode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(data['error'])),
-      );
+      return;
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Erreur connexion : $e")),
-    );
+    if (password.isEmpty || password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Mot de passe doit avoir au moins 6 caractères"),
+        ),
+      );
+      return;
+    }
+
+    // 🔹 Appel au backend
+    var url = "http://192.168.1.53:5000/login";
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
+      );
+
+      print("Status code: ${response.statusCode}");
+      print("Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
+        final user = data['user'];
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        await prefs.setString('name', user['name']);
+        await prefs.setString('email', user['email']);
+        print("Connexion réussie ! Token: $token");
+
+        // 🔹 Naviguer vers le dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => NyeHomePage()),
+        );
+      } else {
+        final data = jsonDecode(response.body);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(data['error'])));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Erreur connexion : $e")));
+    }
   }
-}
 
   // 🔹 Affichage message d'erreur en bas
   void showErrorMessage(String message) {
@@ -132,9 +128,7 @@ class _ConnexionState extends State<Connexion> {
                   const SizedBox(height: 10),
                   const Text(
                     'Bienvenue sur votre application NYE',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 240, 243, 243),
-                    ),
+                    style: TextStyle(color: Color.fromARGB(255, 240, 243, 243)),
                   ),
                   const SizedBox(height: 30),
 
@@ -229,7 +223,9 @@ class _ConnexionState extends State<Connexion> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const Inscription()),
+                            MaterialPageRoute(
+                              builder: (_) => const Inscription(),
+                            ),
                           );
                         },
                         child: const Text(

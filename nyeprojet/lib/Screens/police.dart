@@ -28,7 +28,6 @@ class _PoliceState extends State<Police> {
 
   // Récupère la position GPS de l'utilisateur
   Future<void> getUserLocation() async {
-<<<<<<< HEAD
     LocationPermission permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.denied) {
@@ -40,11 +39,9 @@ class _PoliceState extends State<Police> {
       return;
     }
 
-=======
-    await Geolocator.requestPermission();
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     setState(() {
       userLocation = LatLng(position.latitude, position.longitude);
@@ -56,10 +53,12 @@ class _PoliceState extends State<Police> {
   Future<void> searchAddress(String address) async {
     try {
       final url = Uri.parse(
-          "https://nominatim.openstreetmap.org/search?q=$address&format=json");
-      final response = await http.get(url, headers: {
-        'User-Agent': 'com.example.nyeprojet',
-      });
+        "https://nominatim.openstreetmap.org/search?q=$address&format=json",
+      );
+      final response = await http.get(
+        url,
+        headers: {'User-Agent': 'com.example.nyeprojet'},
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -70,14 +69,14 @@ class _PoliceState extends State<Police> {
             selectedLocation = LatLng(lat, lon);
           });
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Adresse non trouvée")),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Adresse non trouvée")));
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Erreur serveur")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Erreur serveur")));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,9 +107,7 @@ class _PoliceState extends State<Police> {
   @override
   Widget build(BuildContext context) {
     if (userLocation == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -122,13 +119,8 @@ class _PoliceState extends State<Police> {
         children: [
           FlutterMap(
             options: MapOptions(
-<<<<<<< HEAD
               initialCenter: userLocation!,
               initialZoom: 15,
-=======
-              center: userLocation!,
-              zoom: 15,
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
               onTap: (tap, point) {
                 setState(() {
                   selectedLocation = point;
@@ -183,8 +175,9 @@ class _PoliceState extends State<Police> {
             right: 20,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 15)),
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
               onPressed: sendLocation,
               child: const Text(
                 "Envoyer la localisation",

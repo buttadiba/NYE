@@ -37,8 +37,8 @@ class _EmergencyPageState extends State<EmergencyPage> {
     Future.delayed(Duration(milliseconds: 500), () {
       mapController.move(currentLocation!, 15);
     });
-    
   }
+
   void selectLocation(dynamic place) {
     final lat = double.parse(place["lat"]);
     final lon = double.parse(place["lon"]);
@@ -52,7 +52,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
   }
 
   Future<void> sendEmergency() async {
-    var url = Uri.parse("http://192.168.1.17:5000/emergency");
+    var url = Uri.parse("http://192.168.1.53:5000/location");
 
     await http.post(
       url,
@@ -64,20 +64,18 @@ class _EmergencyPageState extends State<EmergencyPage> {
       }),
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Urgence envoyée 🚨")),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Urgence envoyée 🚨")));
   }
+
   void saveLocation(LatLng point) async {
-    var url = Uri.parse("http://192.168.1.17:5000/location");
+    var url = Uri.parse("http://192.168.1.53:5000/location");
 
     await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "lat": point.latitude,
-        "lng": point.longitude,
-      }),
+      body: jsonEncode({"lat": point.latitude, "lng": point.longitude}),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -96,7 +94,8 @@ class _EmergencyPageState extends State<EmergencyPage> {
     // appel aux agences de securite selon le type d'urgence
     String key = widget.type.toLowerCase().trim();
 
-    String number = numbers[key] ?? "80001125"; // par défaut,  on appeler la police
+    String number =
+        numbers[key] ?? "80001125"; // par défaut,  on appeler la police
 
     print("TYPE = $key");
     print("NUMBER = $number");
@@ -104,7 +103,8 @@ class _EmergencyPageState extends State<EmergencyPage> {
     final Uri uri = Uri(scheme: 'tel', path: number);
     await launchUrl(uri);
   }
-    Future<void> fetchSuggestions(String query) async {
+
+  Future<void> fetchSuggestions(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
       return;
@@ -127,11 +127,13 @@ class _EmergencyPageState extends State<EmergencyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Urgence : ${widget.type}", style: const TextStyle(color: Colors.white)),
+        title: Text(
+          "Urgence : ${widget.type}",
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 15, 1, 84),
-        
       ),
-      
+
       body: currentLocation == null
           ? const Center(child: CircularProgressIndicator())
           : Stack(
@@ -139,22 +141,22 @@ class _EmergencyPageState extends State<EmergencyPage> {
                 FlutterMap(
                   mapController: mapController,
                   options: MapOptions(
-                  initialCenter: currentLocation!,
-                  initialZoom: 15,
+                    initialCenter: currentLocation!,
+                    initialZoom: 15,
 
-                  onTap: (tapPosition, point) {
-                    saveLocation(point);
+                    onTap: (tapPosition, point) {
+                      saveLocation(point);
 
-                    // deplacemr le point sur la carte
-                    mapController.move(point, 15);
-                  },
-                ),
+                      // deplacemr le point sur la carte
+                      mapController.move(point, 15);
+                    },
+                  ),
                   children: [
                     TileLayer(
-                      urlTemplate: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                      urlTemplate:
+                          "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
                       subdomains: ['a', 'b', 'c'],
                     ),
-                    
 
                     MarkerLayer(
                       markers: [
@@ -191,38 +193,38 @@ class _EmergencyPageState extends State<EmergencyPage> {
                   ),
                 ),
                 if (suggestions.isNotEmpty)
+                  Positioned(
+                    top: 80,
+                    left: 15,
+                    right: 15,
+                    child: Container(
+                      color: Colors.white,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: suggestions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(suggestions[index]["display_name"]),
+                            onTap: () {
+                              selectLocation(suggestions[index]);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 Positioned(
-                  top: 80,
-                  left: 15,
-                  right: 15,
+                  bottom: 10,
+                  right: 10,
                   child: Container(
-                    color: Colors.white,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: suggestions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(suggestions[index]["display_name"]),
-                          onTap: () {
-                            selectLocation(suggestions[index]);
-                          },
-                        );
-                      },
+                    color: Colors.white70,
+                    padding: EdgeInsets.all(5),
+                    child: Text(
+                      '© OpenStreetMap contributors',
+                      style: TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
-                Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Container(
-                        color: Colors.white70,
-                        padding: EdgeInsets.all(5),
-                        child: Text(
-                          '© OpenStreetMap contributors',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ),
 
                 Positioned(
                   bottom: 20,

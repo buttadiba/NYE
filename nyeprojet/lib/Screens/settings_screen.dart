@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
-import 'package:http/http.dart' as http;
->>>>>>> b0c0c1f50e88b73fc3d29c8411c00a205be0ef7f
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/home.dart';
@@ -12,15 +8,15 @@ import 'package:nyeprojet/widgets/nav_bar.dart';
 
 // ── Couleurs Principales
 class AppColors {
-  static const richBlack       = Color(0xFF00072D);
-  static const darkGreen       = Color(0xFF051650);
+  static const richBlack = Color(0xFF00072D);
+  static const darkGreen = Color(0xFF051650);
   static const bangladeshGreen = Color(0xFF0A2472);
-  static const caribbeanGreen  = Color(0xFF123499);
-  static const pureWhite       = Color(0xFFFFFFFF);
-  static const lightBg         = Color(0xFFEEF2FF);
-  static const divider         = Color(0xFFD0D9F5);
-  static const textDark        = Color(0xFF00072D);
-  static const textMuted       = Color(0xFF6B7FC4);
+  static const caribbeanGreen = Color(0xFF123499);
+  static const pureWhite = Color(0xFFFFFFFF);
+  static const lightBg = Color(0xFFEEF2FF);
+  static const divider = Color(0xFFD0D9F5);
+  static const textDark = Color(0xFF00072D);
+  static const textMuted = Color(0xFF6B7FC4);
 }
 
 // ── Screen ───────────────────────────────────────────────────────────────────
@@ -33,47 +29,41 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   int _selectedIndex = 3;
-    String name = "";
-    String email = "";
+  String name = "";
+  String email = "";
 
-    @override
-    void initState() {
-      super.initState();
-      loadUserData();
-    }
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
 
-    Future<void> loadUserData() async {
-      final prefs = await SharedPreferences.getInstance();
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
 
-      setState(() {
-        name = prefs.getString('name') ?? "Utilisateur";
-        email = prefs.getString('email') ?? "email@gmail.com";
-      });
-    }
+    setState(() {
+      name = prefs.getString('name') ?? "Utilisateur";
+      email = prefs.getString('email') ?? "email@gmail.com";
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    switch(index) {
+    switch (index) {
       case 0:
         Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => NyeHomePage()),
-          );
+          context,
+          MaterialPageRoute(builder: (_) => NyeHomePage()),
+        );
         break;
       case 1:
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => AlertPage()),
-          );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AlertPage()));
         break;
       case 2:
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => Urgence())
-          );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => Urgence()));
         break;
       case 3:
         // On est déjà sur la page profil
@@ -106,33 +96,72 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const _AppBar(),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
                 children: [
                   _ProfileCard(name: name, email: email, onLogout: logout),
                   const SizedBox(height: 28),
                   const _SectionLabel('Mon compte'),
                   const SizedBox(height: 8),
-                  const _SettingsGroup(items: [
-                    _SettingsTile(icon: Icons.person_outline_rounded,    label: 'Gérer mon profil'),
-                    _SettingsTile(icon: Icons.lock_outline_rounded,       label: 'Mot de passe et sécurité'),
-                    _SettingsTile(icon: Icons.notifications_none_rounded, label: 'Notifications'),
-                    _SettingsTile(icon: Icons.language_rounded,           label: 'Langues', isLast: true),
-                  ]),
+                  const _SettingsGroup(
+                    items: [
+                      _SettingsTile(
+                        icon: Icons.person_outline_rounded,
+                        label: 'Gérer mon profil',
+                      ),
+                      _SettingsTile(
+                        icon: Icons.lock_outline_rounded,
+                        label: 'Mot de passe et sécurité',
+                      ),
+                      _SettingsTile(
+                        icon: Icons.notifications_none_rounded,
+                        label: 'Notifications',
+                      ),
+                      _SettingsTile(
+                        icon: Icons.language_rounded,
+                        label: 'Langues',
+                        isLast: true,
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 28),
                   const _SectionLabel('Préférences'),
                   const SizedBox(height: 8),
-                  const _SettingsGroup(items: [
-                    _SettingsTile(icon: Icons.info_outline_rounded,  label: 'À propos de nous'),
-                    _SettingsTile(icon: Icons.palette_outlined,       label: 'Thème'),
-                    _SettingsTile(icon: Icons.emergency_outlined,     label: 'Numéros des urgences', isLast: true),
-                  ]),
+                  const _SettingsGroup(
+                    items: [
+                      _SettingsTile(
+                        icon: Icons.info_outline_rounded,
+                        label: 'À propos de nous',
+                      ),
+                      _SettingsTile(
+                        icon: Icons.palette_outlined,
+                        label: 'Thème',
+                      ),
+                      _SettingsTile(
+                        icon: Icons.emergency_outlined,
+                        label: 'Numéros des urgences',
+                        isLast: true,
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 28),
                   const _SectionLabel('Assistance'),
                   const SizedBox(height: 8),
-                  const _SettingsGroup(items: [
-                    _SettingsTile(icon: Icons.devices_outlined,      label: 'Vos dispositifs'),
-                    _SettingsTile(icon: Icons.help_outline_rounded,  label: "Centre d'aide", isLast: true),
-                  ]),
+                  const _SettingsGroup(
+                    items: [
+                      _SettingsTile(
+                        icon: Icons.devices_outlined,
+                        label: 'Vos dispositifs',
+                      ),
+                      _SettingsTile(
+                        icon: Icons.help_outline_rounded,
+                        label: "Centre d'aide",
+                        isLast: true,
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 32),
                   const SizedBox(height: 16),
                 ],
@@ -178,7 +207,11 @@ class _ProfileCard extends StatelessWidget {
   final String email;
   final VoidCallback onLogout;
 
-  const _ProfileCard({required this.name, required this.email, required this.onLogout});
+  const _ProfileCard({
+    required this.name,
+    required this.email,
+    required this.onLogout,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -205,13 +238,20 @@ class _ProfileCard extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.bangladeshGreen, AppColors.caribbeanGreen],
+                    colors: [
+                      AppColors.bangladeshGreen,
+                      AppColors.caribbeanGreen,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person_rounded, color: Colors.white, size: 30),
+                child: const Icon(
+                  Icons.person_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -239,7 +279,11 @@ class _ProfileCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 22),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textMuted,
+                size: 22,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -252,7 +296,7 @@ class _ProfileCard extends StatelessWidget {
               ),
             ),
             child: const Text("Déconnexion"),
-          )
+          ),
         ],
       ),
     );
@@ -351,7 +395,11 @@ class _SettingsTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 20),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textMuted,
+                  size: 20,
+                ),
               ],
             ),
           ),
