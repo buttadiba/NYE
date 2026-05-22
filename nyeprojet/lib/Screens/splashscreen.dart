@@ -16,8 +16,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Attendre 10 secondes avant daller sur la page login
-    Timer(const Duration(seconds: 10), () {
+    // Attendre 6 secondes avant daller sur la page login
+    Timer(const Duration(seconds: 6), () {
       if (widget.token != null && widget.token!.isNotEmpty) {
         Navigator.pushReplacement(
           context,

@@ -4,6 +4,7 @@ import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/settings_screen.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
 import 'urgence.dart';
+import 'alert_detail.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -59,7 +60,7 @@ class _AlertPageState extends State<AlertPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://172.20.10.10:5000/alerts'),
+        Uri.parse('http://10.155.45.239:5000/alerts'),
       );
 
       print("RAW: ${response.body}");
@@ -98,7 +99,10 @@ class _AlertPageState extends State<AlertPage> {
         );
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => AlertPage()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => AlertPage()),
+        );
         break;
       case 2:
         Navigator.push(context, MaterialPageRoute(builder: (_) => Urgence()));
@@ -116,8 +120,8 @@ class _AlertPageState extends State<AlertPage> {
     String title = alert['title'] ?? "";
     String status = alert['status'] ?? "";
     String time = alert['time'] ?? "";
-
-    Color statusColor = status.toLowerCase().contains("résol")
+    //si le status continet resolv alors vert, sinon rouge
+    Color statusColor = status.toLowerCase().contains("resolv")
         ? Colors.green
         : Colors.red;
 
@@ -135,7 +139,7 @@ class _AlertPageState extends State<AlertPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
 
-          // 🔥 TU GARDE TON LED EFFECT
+          // effet de led autour des alertes : vert si résolue, rouge sinon
           boxShadow: [
             BoxShadow(
               color: statusColor.withOpacity(0.6),
@@ -221,7 +225,6 @@ class _AlertPageState extends State<AlertPage> {
                 ),
               ),
 
-              // 👉 flèche sans changer ton design
               Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
             ],
           ),
@@ -252,38 +255,6 @@ class _AlertPageState extends State<AlertPage> {
       bottomNavigationBar: NavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
-      ),
-    );
-  }
-}
-
-// Dummy AlertDetailPage implementation
-class AlertDetailPage extends StatelessWidget {
-  final Map alert;
-
-  const AlertDetailPage({Key? key, required this.alert}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(alert['title'] ?? 'Détail de l\'alerte')),
-      body: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Statut: ${alert['status'] ?? ''}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Heure: ${alert['time'] ?? ''}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            // Add more details as needed
-          ],
-        ),
       ),
     );
   }

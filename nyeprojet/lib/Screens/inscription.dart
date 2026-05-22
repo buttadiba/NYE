@@ -46,7 +46,7 @@ class _InscriptionState extends State<Inscription> {
       return;
     }
 
-    var url = "http://172.20.10.10:5000/register";
+    var url = "http://10.155.45.239:5000/register";
 
     try {
       final response = await http.post(

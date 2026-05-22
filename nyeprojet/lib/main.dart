@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nyeprojet/Screens/home.dart';
-import 'package:nyeprojet/Screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Screens/splashscreen.dart';
 

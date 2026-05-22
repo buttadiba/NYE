@@ -1,6 +1,6 @@
 import email
 
-from flask import Blueprint, request, jsonify 
+from flask import Blueprint, Flask, request, jsonify 
 from models import db, User, bcrypt, Role 
 import jwt 
 import datetime 
@@ -204,7 +204,39 @@ def add_alert():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+    
 
+app = Flask(__name__)
+@routes.route('/alerts/<int:id>', methods=['PUT'])
+def update_alert(id):
+    try:
+        data = request.get_json()
+        new_status = data.get('status')
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # vérifier si existe
+        cursor.execute("SELECT * FROM alerts WHERE id = %s", (id,))
+        alert = cursor.fetchone()
+
+        if not alert:
+            return jsonify({"error": "Alerte non trouvée"}), 404
+
+        # update status
+        cursor.execute(
+            "UPDATE alerts SET status = %s WHERE id = %s",
+            (new_status, id)
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Statut mis à jour"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 # ======================
 # LINK ALERT -> EMERGENCY (TEST)
 # ======================

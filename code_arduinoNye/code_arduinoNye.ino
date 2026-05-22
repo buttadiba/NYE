@@ -8,12 +8,27 @@
 #include "soc/rtc_cntl_reg.h"
 #include <WiFi.h>
 #include <WebServer.h>
+#include <HTTPClient.h>
 
 // ==========================================
 // CONFIGURATION DU POINT D'ACCÈS (RÉSEAU AP)
 // ==========================================
-const char* ap_ssid = "ESP32-CAM_Securite"; // Nom du WiFi généré par l'ESP32
-const char* ap_password = "SuperPassword123"; // 8 caractères minimum requis
+const char* ssid = "....adiba";
+const char* password = "bestgirl2";
+
+void connectWiFi() {
+  WiFi.begin(ssid, password);
+  Serial.print("Connexion WiFi...");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnecté !");
+  Serial.print("IP ESP: ");
+  Serial.println(WiFi.localIP());
+}
 
 WebServer server(80);
 
@@ -55,19 +70,37 @@ void alarmSound();
 void captureAndSave();
 void rainbowFlash();
 
+void sendAlert(String type) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http; 
+
+    http.begin("http://10.155.45.239:5000/add-alert"); // 🔥 IP DU BACKEND
+    http.addHeader("Content-Type", "application/json");
+
+    String json = "{\"type\":\"" + type + "\", \"description\":\"Alerte ESP\"}";
+
+    int code = http.POST(json);
+
+    Serial.print("Response: ");
+    Serial.println(code);
+
+    http.end();
+  }
+}
+
 void setup() {
+
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
   delay(1000);
+
+  connectWiFi(); 
 
   pinMode(PIR_PIN, INPUT);
   pinMode(FLAME_PIN, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
 
-  pixels.begin();
-  pixels.setBrightness(100); 
-  pixels.clear();
-  pixels.show();
+
 
   // ==========================================
   // INITIALISATION DU POINT D'ACCÈS (AP)
@@ -75,21 +108,8 @@ void setup() {
   // ==========================================
   // INITIALISATION DU POINT D'ACCÈS (AP)
   // ==========================================
-  Serial.println("\nConfiguration du Point d'Accès...");
-  
-  WiFi.mode(WIFI_AP); // Force explicitement le mode Point d'Accès
-  delay(200); // Laisse le temps au matériel de changer de mode
-  
-  // Lancement direct avec l'IP par défaut stable (192.168.4.1)
-  if (WiFi.softAP(ap_ssid, ap_password)) {
-    Serial.println("Point d'Accès créé avec succès !");
-    Serial.print("Nom du WiFi (SSID) : ");
-    Serial.println(ap_ssid);
-    Serial.print("Adresse IP du serveur : ");
-    Serial.println(WiFi.softAPIP());
-  } else {
-    Serial.println("Échec de la création du Point d'Accès.");
-  }
+
+
   delay(300); // Pause de sécurité pour stabiliser l'antenne avant la suite
 
 
@@ -152,24 +172,13 @@ void loop() {
   int flame = digitalRead(FLAME_PIN);
   if (flame == LOW) {
     Serial.println("FEU DETECTE !!!");
-    setAllColor(255, 0, 0);
-    alarmSound();
-    captureAndSave();
-    delay(5000);
-    pixels.clear();
-    pixels.show();
+    sendAlert("feu");
   }
 
   int mvt = digitalRead(PIR_PIN);
   if (mvt == HIGH) {
     Serial.println("MOUVEMENT DETECTE");
-    alarmSound();
-    rainbowFlash();
-    captureAndSave();
-    pixels.clear();
-    pixels.show();
-    noTone(BUZZER_PIN);
-    delay(3000);
+    sendAlert("mouvement");
   }
   delay(100);
 }
