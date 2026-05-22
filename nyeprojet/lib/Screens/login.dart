@@ -47,7 +47,7 @@ class _ConnexionState extends State<Connexion> {
     }
 
     // 🔹 Appel au backend
-    var url = "http://192.168.1.53:5000/login";
+    var url = "http://172.20.10.10:5000/login";
     try {
       final response = await http.post(
         Uri.parse(url),

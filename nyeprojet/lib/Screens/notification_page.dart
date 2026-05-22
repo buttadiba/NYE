@@ -59,7 +59,7 @@ class _AlertPageState extends State<AlertPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.53:5000/alerts'),
+        Uri.parse('http://172.20.10.10:5000/alerts'),
       );
 
       print("RAW: ${response.body}");

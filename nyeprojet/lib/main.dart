@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nyeprojet/Screens/home.dart';
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Screens/splashscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: token != null ? NyeHomePage() : Connexion());
+    return MaterialApp(
+      home: SplashScreen(token: token),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

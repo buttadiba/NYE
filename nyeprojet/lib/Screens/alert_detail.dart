@@ -31,7 +31,7 @@ class AlertDetailPage extends StatelessWidget {
 
             if (alert['photo'] != null && alert['photo'] != "")
               Image.network(
-                "http://192.168.1.53:5000/uploads/${alert['photo']}",
+                "http://172.20.10.10:5000/uploads/${alert['photo']}",
               ),
           ],
         ),

@@ -52,7 +52,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
   }
 
   Future<void> sendEmergency() async {
-    var url = Uri.parse("http://192.168.1.53:5000/location");
+    var url = Uri.parse("http://172.20.10.10:5000/location");
 
     await http.post(
       url,
