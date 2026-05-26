@@ -15,13 +15,13 @@ db.init_app(app)
 bcrypt.init_app(app)
 
 # 🔹 Enregistrer les routes
-app.register_blueprint(routes)  # 🔹 c'est ce qui permet à Flask de connaître /login et /register
+app.register_blueprint(routes)  # il permet à Flask de connaître /login et /register
 
 # 🔹 Route de test
 @app.route('/')
 def home():
     return "Backend NYE actif !"
 
-# 🔴 IMPORTANT pour accès depuis le téléphone
+# 🔹 Accès depuis le téléphone
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

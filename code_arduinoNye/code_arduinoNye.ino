@@ -1,4 +1,3 @@
-
 #include "esp_camera.h"
 #include "Arduino.h"
 #include "FS.h"
@@ -8,40 +7,38 @@
 #include "soc/rtc_cntl_reg.h"
 #include <WiFi.h>
 #include <WebServer.h>
-#include <HTTPClient.h>
+#include <HTTPClient.h> 
 
 // ==========================================
-// CONFIGURATION DU POINT D'ACCÈS (RÉSEAU AP)
+// CONFIGURATION DU RÉSEAU WIFI
 // ==========================================
 const char* ssid = "....adiba";
 const char* password = "bestgirl2";
 
-void connectWiFi() {
-  WiFi.begin(ssid, password);
-  Serial.print("Connexion WiFi...");
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("\nConnecté !");
-  Serial.print("IP ESP: ");
-  Serial.println(WiFi.localIP());
-}
-
-WebServer server(80);
-
 // ==========================================
-// CONFIGURATION CORRIGÉE DES BROCHES
+// CONFIGURATION DES BROCHES
 // ==========================================
-#define PIR_PIN 13      // OK en mode SD 1-bit
-#define FLAME_PIN 12    // OK en mode SD 1-bit
-#define BUZZER_PIN 15   // OK en mode SD 1-bit
-#define LED_PIN 4       // Utilise la broche du flash
-#define NUM_LEDS 60
+#define PIR_PIN 13       
+#define FLAME_PIN 12     
+#define BUZZER_PIN 15    
+#define LED_PIN 4        
+#define NUM_LEDS 300
 
 Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+// ==========================================
+// VARIABLES DE L'ALARME ET DE L'APP
+// ==========================================
+bool systemEnabled = true; 
+bool alarmOn = false;
+String alarmType = ""; 
+unsigned long alarmStartTime = 0;
+const unsigned long ALARM_DURATION = 10000; 
+
+int alarmFreq = 400;
+int alarmStep = 20;
+unsigned long lastLedToggle = 0;
+bool ledState = false;
 
 // ==========================================
 // CONFIGURATION CAMÉRA AI THINKER
@@ -63,59 +60,66 @@ Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+WebServer server(80);
+
 // Déclarations des fonctions
+void connectWiFi();
 void startupAnimation();
-void setAllColor(int r, int g, int b);
+void setAllRed();
+void clearAllLeds();
 void alarmSound();
 void captureAndSave();
-void rainbowFlash();
+void sendAlert(String type);
 
-void sendAlert(String type) {
+void connectWiFi() {
+  WiFi.begin(ssid, password);
+  Serial.print("Connexion WiFi...");
+  unsigned long startAttempt = millis();
+  
+  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 15000) {
+    delay(500);
+    Serial.print(".");
+  }
+  
   if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http; 
-
-    http.begin("http://10.155.45.239:5000/add-alert"); // 🔥 IP DU BACKEND
-    http.addHeader("Content-Type", "application/json");
-
-    String json = "{\"type\":\"" + type + "\", \"description\":\"Alerte ESP\"}";
-
-    int code = http.POST(json);
-
-    Serial.print("Response: ");
-    Serial.println(code);
-
-    http.end();
+    Serial.println("\nConnecté !");
+    Serial.print("IP ESP: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("\nÉchec WiFi : Mode local activé.");
   }
 }
 
-void setup() {
+void sendAlert(String type) {
+  if (WiFi.status() != WL_CONNECTED) return;
 
+  HTTPClient http; 
+  http.begin("http://10.155.45.239:5000/add-alert"); 
+  http.setTimeout(2000); 
+  http.addHeader("Content-Type", "application/json");
+  
+  String json = "{\"type\":\"" + type + "\", \"description\":\"Alerte ESP\"}";
+  int code = http.POST(json);
+  http.end();
+}
+
+void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
-  delay(1000);
+  delay(500);
+
+  pixels.begin();
+  pixels.show();
+  pixels.setBrightness(60); 
 
   connectWiFi(); 
 
-  pinMode(PIR_PIN, INPUT);
-  pinMode(FLAME_PIN, INPUT);
+  pinMode(PIR_PIN, INPUT_PULLDOWN);  
+  pinMode(FLAME_PIN, INPUT_PULLUP);  
   pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW);
 
-
-
-  // ==========================================
-  // INITIALISATION DU POINT D'ACCÈS (AP)
-  // ==========================================
-  // ==========================================
-  // INITIALISATION DU POINT D'ACCÈS (AP)
-  // ==========================================
-
-
-  delay(300); // Pause de sécurité pour stabiliser l'antenne avant la suite
-
-
-  // ==========================================
   // CONFIGURATION CAMÉRA
-  // ==========================================
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -143,91 +147,156 @@ void setup() {
 
   if (esp_camera_init(&config) != ESP_OK) {
     Serial.println("ERREUR CAMERA");
-  } else {
-    Serial.println("CAMERA OK");
   }
 
-  // ==========================================
-  // INITIALISATION SD (MODE 1-BIT IMPÉRATIF)
-  // ==========================================
   if (!SD_MMC.begin("/sdcard", true)) {
     Serial.println("ERREUR SD");
-  } else {
-    Serial.println("SD OK");
   }
 
+  Serial.println("Calibration...");
   startupAnimation();
+  Serial.println("Système prêt !");
 
-  // Page web du serveur
+  // ROUTES POUR L'APPLICATION
   server.on("/", []() {
-    server.send(200, "text/html", "<h1>ESP32 CAMERA ALARME</h1><p>Mode Point d'Acces Actif</p>");
+    String statut = systemEnabled ? "ACTIVE" : "DESACTIVE";
+    server.send(200, "text/html", "<h1>ESP32 ALARME</h1><p>Surveillance: " + statut + "</p>");
   });
+
+  server.on("/api/on", []() {
+    systemEnabled = true;
+
+    //  faire un reset propre du système
+    alarmOn = false;
+    alarmType = "";
+    noTone(BUZZER_PIN);
+    digitalWrite(BUZZER_PIN, LOW);
+    clearAllLeds();
+
+    server.send(200, "application/json", "{\"status\":\"ON\"}");
+  });
+  server.on("/api/off", []() {
+    systemEnabled = false;
+    alarmOn = false;
+    alarmType = "";
+    noTone(BUZZER_PIN);
+    digitalWrite(BUZZER_PIN, LOW);
+    clearAllLeds();
+    server.send(200, "application/json", "{\"status\":\"OFF\"}");
+  });
+
   server.begin();
-  Serial.println("Serveur HTTP demarre");
 }
 
 void loop() {
   server.handleClient();
   
-  int flame = digitalRead(FLAME_PIN);
-  if (flame == LOW) {
-    Serial.println("FEU DETECTE !!!");
-    sendAlert("feu");
+  if (!systemEnabled) {
+    delay(10);
+    return; 
   }
 
-  int mvt = digitalRead(PIR_PIN);
-  if (mvt == HIGH) {
-    Serial.println("MOUVEMENT DETECTE");
-    sendAlert("mouvement");
+  // ---- MODE SURVEILLANCE ----
+  if (!alarmOn) {
+    int flameReading = digitalRead(FLAME_PIN);
+    int mvtReading = digitalRead(PIR_PIN);
+
+    if (flameReading == LOW || mvtReading == HIGH) {
+      delay(100); 
+      
+      if (digitalRead(FLAME_PIN) == LOW) { 
+        Serial.println("!!! CONFIRMATION FEU !!!");
+        alarmOn = true;
+        alarmType = "feu";
+        alarmStartTime = millis();
+        alarmFreq = 800; 
+        alarmStep = 35;
+        setAllRed(); 
+        sendAlert("feu");
+        captureAndSave();
+      } 
+      else if (digitalRead(PIR_PIN) == HIGH) { 
+        Serial.println("!!! CONFIRMATION MOUVEMENT !!!");
+        alarmOn = true;
+        alarmType = "mouvement";
+        alarmStartTime = millis();
+        alarmFreq = 400; 
+        alarmStep = 15;
+        setAllRed(); 
+        sendAlert("mouvement");
+        captureAndSave();
+      }
+    }
+    
+  } else {
+    // ---- MODE ALARME EN COURS ----
+    if (millis() - alarmStartTime >= ALARM_DURATION) {
+      noTone(BUZZER_PIN);    
+      digitalWrite(BUZZER_PIN, LOW);
+      clearAllLeds();  
+      alarmOn = false;       
+      alarmType = "";
+      delay(1500);           
+      return;
+    }
+
+    alarmSound();
+
+    // Gestion des rythmes de clignotement (toujours en Rouge)
+    unsigned long toggleInterval = (alarmType == "feu") ? 150 : 350; // Plus rapide pour le feu
+
+    if (millis() - lastLedToggle >= toggleInterval) {
+      lastLedToggle = millis();
+      ledState = !ledState;
+      
+      if (ledState) {
+        setAllRed();     
+      } else {
+        clearAllLeds();         
+      }
+    }
   }
-  delay(100);
 }
 
 void captureAndSave() {
   camera_fb_t *fb = esp_camera_fb_get();
-  if (!fb) {
-    Serial.println("Erreur Capture");
-    return;
-  }
+  if (!fb) return;
+  
   String path = "/photo_" + String(millis()) + ".jpg";
   File file = SD_MMC.open(path.c_str(), FILE_WRITE);
-  if (!file) {
-    Serial.println("Erreur fichier");
-  } else {
+  if (file) {
     file.write(fb->buf, fb->len);
-    Serial.print("Photo sauvegardee : ");
-    Serial.println(path);
+    file.close();
   }
-  file.close();
   esp_camera_fb_return(fb);
 }
 
 void alarmSound() {
-  for (int i = 0; i < 4; i++) {
-    tone(BUZZER_PIN, 1500); delay(150);
-    tone(BUZZER_PIN, 3000); delay(150);
+  tone(BUZZER_PIN, alarmFreq);
+  alarmFreq += alarmStep;
+
+  if (alarmType == "feu") {
+    if (alarmFreq >= 1600 || alarmFreq <= 800) alarmStep = -alarmStep;
+  } else {
+    if (alarmFreq >= 950 || alarmFreq <= 350) alarmStep = -alarmStep;
   }
-  noTone(BUZZER_PIN);
+  delay(8); 
 }
 
-void rainbowFlash() {
-  for (int j = 0; j < 2; j++) {
-    setAllColor(255, 0, 0); delay(100);
-    setAllColor(0, 255, 0); delay(100);
-    setAllColor(0, 0, 255); delay(100);
-  }
-}
-
-void setAllColor(int r, int g, int b) {
+void setAllRed() {
   for (int i = 0; i < NUM_LEDS; i++) {
-    pixels.setPixelColor(i, pixels.Color(r, g, b));
+    pixels.setPixelColor(i, pixels.Color(255, 0, 0)); // Uniquement du Rouge Pur
   }
+  pixels.show();
+}
+
+void clearAllLeds() {
+  pixels.clear();
   pixels.show();
 }
 
 void startupAnimation() {
-  setAllColor(0, 255, 0);
-  delay(500);
-  pixels.clear();
-  pixels.show();
+  setAllRed(); // Rouge fixe pendant le démarrage / calibration
+  delay(8000); 
+  clearAllLeds();
 }

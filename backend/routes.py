@@ -23,7 +23,7 @@ def get_db():
     )
 
 
-SECRET_KEY = "mon_secret_pour_jwt"  # 🔥 à changer en production
+SECRET_KEY = "mon_secret_pour_jwt"  #
 # ===== LOGIN =====
 @routes.route('/login', methods=['POST'])
 def login():
@@ -183,16 +183,17 @@ def add_alert():
 
         conn = get_db()
         cursor = conn.cursor()
-
         cursor.execute("""
-            INSERT INTO alerts (device_id, alert_type, description, status, created_at)
+            INSERT INTO alerts (type, title, description, status, created_at)
             VALUES (%s, %s, %s, %s, NOW())
         """, (
-            1,
-            data.get("type", "intrusion detectee"),
+            data.get("type", "intrusion"),
+            "Alerte ESP",   # obligatoire
             data.get("description", "test"),
             "En attente"
         ))
+
+    
 
         conn.commit()
 
