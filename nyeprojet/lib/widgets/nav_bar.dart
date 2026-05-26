@@ -25,9 +25,9 @@ class NavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(Icons.home, 0, "Home"),
-          _buildNavItem(Icons.settings, 1, "Alertes"),
+          _buildNavItem(Icons.error_outline, 1, "Alertes"),
           _buildNavItem(Icons.warning_amber_outlined, 2, "Urgences"),
-          _buildNavItem(Icons.error_outline, 3, "Settings"),
+          _buildNavItem(Icons.settings, 3, "Settings"),
         ],
       ),
     );

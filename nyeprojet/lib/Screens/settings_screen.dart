@@ -105,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 28),
                   const _SectionLabel('Mon compte'),
                   const SizedBox(height: 8),
-                  const _SettingsGroup(
+                  _SettingsGroup(
                     items: [
                       _SettingsTile(
                         icon: Icons.person_outline_rounded,
@@ -115,34 +115,125 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         icon: Icons.lock_outline_rounded,
                         label: 'Mot de passe et sécurité',
                       ),
-                      _SettingsTile(
-                        icon: Icons.notifications_none_rounded,
-                        label: 'Notifications',
-                      ),
+
+                      // Le tile pour choisir la langue de l'application
                       _SettingsTile(
                         icon: Icons.language_rounded,
                         label: 'Langues',
                         isLast: true,
+                        onTap: () {
+                          //afficher la boîte de dialogue pour choisir la langue
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Choisir la langue"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      title: const Text("Français"),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      title: const Text("English"),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
                   const SizedBox(height: 28),
                   const _SectionLabel('Préférences'),
                   const SizedBox(height: 8),
-                  const _SettingsGroup(
+                  _SettingsGroup(
                     items: [
+                      // Le tile pour afficher les informations sur l'application " A propos de nous"
                       _SettingsTile(
                         icon: Icons.info_outline_rounded,
                         label: 'À propos de nous',
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("À propos de NYE"),
+                                content: const Text(
+                                  "NYE est un système intelligent de sécurité conçu pour détecter les intrusions et les dangers tels que le feu en temps réel. "
+                                  "Grâce à un dispositif connecté (ESP32) et une application mobile, NYE permet de surveiller votre environnement, "
+                                  "envoyer des alertes instantanées et améliorer votre sécurité au quotidien.",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Fermer"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                       ),
-                      _SettingsTile(
+                      const _SettingsTile(
                         icon: Icons.palette_outlined,
                         label: 'Thème',
                       ),
+                      // numero d urgence tile
                       _SettingsTile(
                         icon: Icons.emergency_outlined,
                         label: 'Numéros des urgences',
                         isLast: true,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Numéros d'urgence"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      "En cas d'urgence, vous pouvez contactez rapidement les services suivants :",
+                                      style: TextStyle(fontSize: 13),
+                                    ),
+                                    SizedBox(height: 12),
+
+                                    Text("👮 Police : 80 00 11 25"),
+                                    SizedBox(height: 6),
+
+                                    Text("🚑 Ambulance : 76 29 14 70"),
+                                    SizedBox(height: 6),
+
+                                    Text("🛡 Sécurité : 20 23 95 11"),
+                                    SizedBox(height: 6),
+
+                                    Text("🚒 Pompiers : 20 22 80 81"),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Fermer"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -354,11 +445,13 @@ class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isLast;
+  final VoidCallback? onTap;
 
   const _SettingsTile({
     required this.icon,
     required this.label,
     this.isLast = false,
+    this.onTap,
   });
 
   @override
@@ -366,7 +459,7 @@ class _SettingsTile extends StatelessWidget {
     return Column(
       children: [
         InkWell(
-          onTap: () {},
+          onTap: onTap,
           borderRadius: BorderRadius.vertical(
             top: const Radius.circular(20),
             bottom: isLast ? const Radius.circular(20) : Radius.zero,

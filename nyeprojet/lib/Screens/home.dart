@@ -4,7 +4,8 @@ import 'package:nyeprojet/Screens/login.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/urgence.dart';
 import 'settings_screen.dart'; //
-import '../widgets/nav_bar.dart'; // ton widget nav_bar
+import '../widgets/nav_bar.dart';
+import 'package:http/http.dart' as http;
 
 class NyeHomePage extends StatefulWidget {
   const NyeHomePage({super.key});
@@ -14,6 +15,17 @@ class NyeHomePage extends StatefulWidget {
 }
 
 class _NyeHomePageState extends State<NyeHomePage> {
+  // --- Contrôle de l'ESP (API) active ou désactivée ---
+  Future<void> controlESP(bool isOn) async {
+    final url = isOn ? "http://IP_ESP/api/on" : "http://IP_ESP/api/off";
+
+    try {
+      await http.get(Uri.parse(url));
+    } catch (e) {
+      print("Erreur connexion ESP: $e");
+    }
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
@@ -74,12 +86,6 @@ class _NyeHomePageState extends State<NyeHomePage> {
         );
         break;
     }
-  }
-
-  void _toggleNyeOpen() {
-    setState(() {
-      _isNyeOpen = !_isNyeOpen;
-    });
   }
 
   void _togglePowerSave(bool newValue) {
@@ -146,7 +152,19 @@ class _NyeHomePageState extends State<NyeHomePage> {
             ),
             const SizedBox(height: 30),
             GestureDetector(
-              onTap: _toggleNyeOpen,
+              // Lorsque l'utilisateur appuie sur le cercle,
+              //on inverse l'état de l'œil et on envoie la requête à l'ESP
+              onTap: () {
+                bool newState = !_isNyeOpen;
+
+                setState(() {
+                  _isNyeOpen = newState;
+                });
+
+                controlESP(
+                  newState,
+                ); // Envoie la requête à l'ESP pour ouvrir ou fermer l'œil
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 width: 250,
@@ -204,7 +222,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
     );
   }
 
-  // ----------------- Battery Widgets -----------------
+  // ----------------- Batteries Widgets -----------------
   Widget _buildBatteryPercentageCard() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -264,17 +282,19 @@ class _NyeHomePageState extends State<NyeHomePage> {
           ),
           const SizedBox(height: 10),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Activer le mode économie d'énergie",
-                style: TextStyle(color: Colors.white70),
+              Expanded(
+                child: Text(
+                  "Activer le mode économie d'énergie",
+                  style: TextStyle(color: Colors.white70),
+                ),
               ),
-              Switch(
-                value: _isPowerSaveOn,
-                onChanged: _togglePowerSave,
-                activeThumbColor: Colors.white,
-                activeTrackColor: Colors.blueAccent,
+              Transform.scale(
+                scale: 0.7,
+                child: Switch(
+                  value: _isPowerSaveOn,
+                  onChanged: _togglePowerSave,
+                ),
               ),
             ],
           ),
