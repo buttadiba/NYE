@@ -10,9 +10,9 @@ import mysql.connector
 
 routes = Blueprint('routes', __name__)
 
-# ======================
+
 # CONNECTION DB
-# ======================
+
 import mysql.connector
 
 def get_db():
@@ -25,7 +25,7 @@ def get_db():
 
 
 SECRET_KEY = "mon_secret_pour_jwt"  #
-# ===== LOGIN =====
+# LOGIN 
 @routes.route('/login', methods=['POST'])
 def login():
         data = request.json
@@ -60,7 +60,7 @@ def login():
         })
 
 
-    # ===== REGISTER =====
+    # REGISTER 
 @routes.route('/register', methods=['POST'])
 def register():
         try:
@@ -107,9 +107,9 @@ def register():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-# ======================
+
 # TITLE FORMATTER
-# ======================
+
 def map_alert_title(alert_type):
     alert_type = (alert_type or "").lower()
 
@@ -125,9 +125,9 @@ def map_alert_title(alert_type):
         return "Alerte système"
 
 
-# ======================
-# GET ALERTS (JOIN PROPRE)
-# ======================
+
+# GET ALERTS 
+
 @routes.route('/alerts', methods=['GET'])
 def get_alerts():
     conn = get_db()
@@ -174,9 +174,9 @@ def get_alerts():
     
 
 
-# ======================
+
 # ADD ALERT (TEST MANUEL)
-# ======================
+
 @routes.route('/add-alert', methods=['POST'])
 def add_alert():
     try:
@@ -239,9 +239,9 @@ def update_alert(id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-# ======================
+
 # LINK ALERT -> EMERGENCY (TEST)
-# ======================
+
 @routes.route('/link-alert', methods=['POST'])
 def link_alert():
     try:
