@@ -46,8 +46,8 @@ class _ConnexionState extends State<Connexion> {
       return;
     }
 
-    // 🔹 Appel au backend
-    var url = "http://10.155.45.239:5000/login";
+    // Appel au backend
+    var url = "http://192.168.1.112:5000/login";
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -69,7 +69,7 @@ class _ConnexionState extends State<Connexion> {
         await prefs.setString('email', user['email']);
         print("Connexion réussie ! Token: $token");
 
-        // 🔹 Naviguer vers le dashboard
+        //  Naviguer vers le dashboard
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => NyeHomePage()),
@@ -87,7 +87,7 @@ class _ConnexionState extends State<Connexion> {
     }
   }
 
-  // 🔹 Affichage message d'erreur en bas
+  //  Affichage message d'erreur en bas
   void showErrorMessage(String message) {
     final snackBar = SnackBar(
       content: Text(

@@ -46,7 +46,7 @@ class _InscriptionState extends State<Inscription> {
       return;
     }
 
-    var url = "http://10.155.45.239:5000/register";
+    var url = "http://192.168.1.112:5000/register";
 
     try {
       final response = await http.post(
@@ -63,9 +63,10 @@ class _InscriptionState extends State<Inscription> {
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
-        // 🔹 Stocker le token JWT dans SharedPreferences
+        // Stocker le token JWT dans SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', data['token'] ?? "");
+        //gestion du cas où 'user' pourrait être null (gestion d exceptions)
         if (data['user'] != null) {
           await prefs.setString('email', data['user']['email']);
         } else {
@@ -74,7 +75,7 @@ class _InscriptionState extends State<Inscription> {
           });
         }
 
-        // 🔹 Naviguer vers l'accueil
+        // Naviguer vers l'accueil
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => NyeHomePage()),

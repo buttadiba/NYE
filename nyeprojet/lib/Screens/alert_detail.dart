@@ -34,7 +34,7 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
     try {
       final response = await http.put(
         Uri.parse(
-          "http://10.155.45.239:5000/alerts/${widget.alert['alert_id']}",
+          "http://192.168.1.112:5000/alerts/${widget.alert['alert_id']}",
         ),
         // headers et body pour la mise à jour du statut
         headers: {"Content-Type": "application/json"},
@@ -62,7 +62,7 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
   @override
   Widget build(BuildContext context) {
     final String imageUrl =
-        "http://10.155.45.239:5000/uploads/${widget.alert['photo']}";
+        "http://192.168.1.112:5000/uploads/${widget.alert['photo']}";
 
     return Scaffold(
       body: CustomScrollView(

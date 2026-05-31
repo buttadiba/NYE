@@ -6,7 +6,7 @@ import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/urgence.dart';
 import 'package:nyeprojet/widgets/nav_bar.dart';
 
-// ── Couleurs Principales
+// Couleurs Principales
 class AppColors {
   static const richBlack = Color(0xFF00072D);
   static const darkGreen = Color(0xFF051650);
@@ -19,7 +19,7 @@ class AppColors {
   static const textMuted = Color(0xFF6B7FC4);
 }
 
-// ── Screen ───────────────────────────────────────────────────────────────────
+// l ecran de parametres de l application
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -394,7 +394,7 @@ class _ProfileCard extends StatelessWidget {
   }
 }
 
-// ── Section Label ─────────────────────────────────────────────────────────────
+// Tile de section
 class _SectionLabel extends StatelessWidget {
   final String text;
   const _SectionLabel(this.text);
@@ -416,7 +416,7 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-// ── Settings Group ────────────────────────────────────────────────────────────
+// Groupe de paramètres
 class _SettingsGroup extends StatelessWidget {
   final List<_SettingsTile> items;
   const _SettingsGroup({required this.items});
@@ -440,7 +440,7 @@ class _SettingsGroup extends StatelessWidget {
   }
 }
 
-// ── Settings Tile ─────────────────────────────────────────────────────────────
+// parametre de chaque tile de la page de parametres
 class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String label;

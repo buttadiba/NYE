@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             const SizedBox(height: 20),
 
-            // 🔄 loader simple
+            // loader simple
             const CircularProgressIndicator(),
           ],
         ),

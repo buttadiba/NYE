@@ -15,12 +15,15 @@ class NyeHomePage extends StatefulWidget {
 }
 
 class _NyeHomePageState extends State<NyeHomePage> {
-  // --- Contrôle de l'ESP (API) active ou désactivée ---
+  // Pour contrôler l'ESP (API) active ou désactivée
   Future<void> controlESP(bool isOn) async {
-    final url = isOn ? "http://IP_ESP/api/on" : "http://IP_ESP/api/off";
+    final url = isOn
+        ? "http://192.168.1.113/api/on"
+        : "http://192.168.1.113/api/off";
 
     try {
-      await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url));
+      print(response.body);
     } catch (e) {
       print("Erreur connexion ESP: $e");
     }
@@ -57,9 +60,9 @@ class _NyeHomePageState extends State<NyeHomePage> {
 
   int _selectedIndex = 0;
 
-  // --- Variables Home ---
+  // Variables pour le contrôle de l'œil et de la batterie
   bool _isNyeOpen = false;
-  bool _isPowerSaveOn = false;
+  bool _isPowerSaveOn = false; //variable pour le mode économie d'énergie
   final int _batteryLevel = 100;
 
   void _onItemTapped(int index) {
@@ -104,7 +107,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // --- Liste des pages ---
+    // Liste des pages
     final List<Widget> pages = [
       _homePage(), // Home
       _alertPage(), // Alert

@@ -7,6 +7,7 @@ import datetime
 import uuid 
 import mysql.connector
 
+
 routes = Blueprint('routes', __name__)
 
 # ======================
@@ -263,6 +264,44 @@ def link_alert():
         conn.close()
 
         return jsonify({"message": "Lien alert/emergency créé"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+import time
+import os
+
+@routes.route('/upload-image', methods=['POST'])
+def upload_image():
+    try:
+        file = request.data
+
+        filename = f"image_{int(time.time())}.jpg"
+        filepath = os.path.join("uploads", filename)
+
+        with open(filepath, "wb") as f:
+            f.write(file)
+
+        # 🔥 IMPORTANT : ajouter dans la base
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO alerts (type, title, description, status, photo, created_at)
+            VALUES (%s, %s, %s, %s, %s, NOW())
+        """, (
+            "camera",
+            "Photo capturée",
+            "Image envoyée par ESP32",
+            "En attente",
+            filename
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Image reçue", "filename": filename}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

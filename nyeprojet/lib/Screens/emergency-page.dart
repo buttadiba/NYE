@@ -52,7 +52,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
   }
 
   Future<void> sendEmergency() async {
-    var url = Uri.parse("http://10.155.45.239:5000/location");
+    var url = Uri.parse("http://192.168.1.112:5000/location");
 
     await http.post(
       url,
@@ -70,7 +70,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
   }
 
   void saveLocation(LatLng point) async {
-    var url = Uri.parse("http://10.155.45.239:5000/location");
+    var url = Uri.parse("http://192.168.1.112:5000/location");
 
     await http.post(
       url,

@@ -130,7 +130,7 @@ class _PoliceState extends State<Police> {
             children: [
               TileLayer(
                 urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                userAgentPackageName: 'com.example.nyeprojet',
+                userAgentPackageName: 'com.nye.nyeprojet',
               ),
               MarkerLayer(
                 markers: [
@@ -186,7 +186,7 @@ class _PoliceState extends State<Police> {
             ),
           ),
 
-          // Bouton appeler police
+          // Bouton appeler la police
           Positioned(
             bottom: 90,
             right: 20,
