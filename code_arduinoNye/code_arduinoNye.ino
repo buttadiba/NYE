@@ -11,20 +11,22 @@
 
 bool alertSent = false;
 
-// ✅ AJOUTS CORRECTS (MANQUANTS)
+
 bool pirReady = false;
 unsigned long pirStartTime = 0;
 int lastMvtState = LOW;
 bool alarmActive = false;
 bool motionLock = false;
 bool flameLock = false;
+bool confirmationPending = false;
+unsigned long confirmationStartTime = 0;
+const unsigned long CONFIRMATION_DELAY = 10000;
 
 unsigned long lastMotionTime = 0;
 const unsigned long MOTION_COOLDOWN = 30000;
 
-// ==========================================
 // CONFIGURATION DU RÉSEAU WIFI
-// ==========================================
+
 const char* ssid = "Orange-6B6F";
 const char* password = "Y9H2G25H4MH";
 
@@ -82,17 +84,25 @@ void startupAnimation();
 void setAllRed();
 void clearAllLeds();
 void alarmSound();
-void captureAndSave();
-void sendAlert(String type);
+void captureAndSave(long alertId);
+long sendAlert(String type);
 
-void sendPhotoSafe(uint8_t* buf, size_t len) {
+void sendPhotoSafe(uint8_t* buf, size_t len, long alertId) {
+  if (WiFi.status() != WL_CONNECTED || alertId <= 0) {
+    Serial.println("Photo non envoyée : alerte ou WiFi indisponible");
+    return;
+  }
+
   HTTPClient http;
-  http.begin("http://192.168.1.112:5000/upload-image");
+  String url = "http://192.168.1.112:5000/upload-image?alert_id=" +
+               String(alertId);
+
+  http.begin(url);
   http.addHeader("Content-Type", "image/jpeg");
 
   int response = http.POST(buf, len);
 
-  Serial.print("Photo response: ");
+  Serial.print("Réponse photo : ");
   Serial.println(response);
 
   http.end();
@@ -117,17 +127,41 @@ void connectWiFi() {
   }
 }
 
-void sendAlert(String type) {
-  if (WiFi.status() != WL_CONNECTED) return;
+long sendAlert(String type) {
+  if (WiFi.status() != WL_CONNECTED) return -1;
 
   HTTPClient http;
   http.begin("http://192.168.1.112:5000/alerts");
-  http.setTimeout(2000);
+  http.setTimeout(5000);
   http.addHeader("Content-Type", "application/json");
 
-  String json = "{\"type\":\"" + type + "\", \"title\":\"Alerte ESP\", \"description\":\"Détection\"}";
+  String json = "{\"type\":\"" + type +
+                "\",\"title\":\"Alerte ESP\",\"description\":\"Détection\"}";
+
   int code = http.POST(json);
+  long alertId = -1;
+
+  if (code > 0) {
+    String response = http.getString();
+    Serial.println("Réponse alerte : " + response);
+
+    int keyPosition = response.indexOf("\"alert_id\"");
+    if (keyPosition >= 0) {
+      int colonPosition = response.indexOf(':', keyPosition);
+      if (colonPosition >= 0) {
+        int valueStart = colonPosition + 1;
+        while (valueStart < response.length() && response[valueStart] == ' ') {
+          valueStart++;
+        }
+        alertId = response.substring(valueStart).toInt();
+      }
+    }
+  } else {
+    Serial.println("Échec création alerte");
+  }
+
   http.end();
+  return alertId;
 }
 
 void setup() {
@@ -197,8 +231,10 @@ void setup() {
   });
 
   server.on("/api/on", []() {
+    confirmationPending = false;
     systemRunning = true;
     systemEnabled = true;
+
 
 
     flameLock = false;
@@ -216,7 +252,9 @@ void setup() {
     server.send(200, "application/json", "{\"status\":\"ON\"}");
   });
 
+
   server.on("/api/off", []() {
+    confirmationPending = false;
     systemEnabled = false;
 
     alarmOn = false;
@@ -235,7 +273,7 @@ void setup() {
   server.begin();
 }
 
-void captureAndSave() {
+void captureAndSave(long alertId) {
   camera_fb_t* fb = esp_camera_fb_get();
   if (!fb) {
     Serial.println("Camera fail");
@@ -243,8 +281,7 @@ void captureAndSave() {
   }
 
   Serial.println("Sending photo...");
-
-  sendPhotoSafe(fb->buf, fb->len);
+  sendPhotoSafe(fb->buf, fb->len, alertId);
 
   esp_camera_fb_return(fb);
 }
@@ -290,6 +327,16 @@ void startupAnimation() {
 void loop() {
 
   server.handleClient();
+  if (confirmationPending &&
+      systemEnabled &&
+      millis() - confirmationStartTime >= CONFIRMATION_DELAY) {
+
+    confirmationPending = false;
+    alarmOn = true;
+    alarmStartTime = millis();
+
+    setAllRed();
+  }
 
   if (!pirReady) {
     if (millis() - pirStartTime > 60000) {
@@ -326,21 +373,25 @@ void loop() {
   if (flameReading == HIGH) flameLock = false;
   if (mvtReading == LOW) motionLock = false;
 
-  if (flameReading == LOW && !flameLock && !alarmActive) {
-
+  if (flameReading == LOW && !flameLock) {
+    // Le feu prend la priorité sur le compte à rebours d'un mouvement
+    confirmationPending = false;
     alarmActive = true;
     flameLock = true;
 
-    Serial.println("FEU DETECTÉ");
+    Serial.println("FEU DETECTE");
 
     alarmOn = true;
     alarmType = "feu";
     alarmStartTime = millis();
 
+    // Déclencher les sorties avant les appels réseau
     setAllRed();
-    sendAlert("feu");
-    captureAndSave();
-  }
+    tone(BUZZER_PIN, alarmFreq);
+
+    long alertId = sendAlert("feu");
+    captureAndSave(alertId);
+  }  
 
 
   static unsigned long motionStart = 0;
@@ -358,58 +409,38 @@ void loop() {
 
       Serial.println("MOUVEMENT DETECTÉ");
 
-      alarmOn = true;
+      alarmOn = false;
       alarmType = "mouvement";
-      alarmStartTime = millis();
 
-      setAllRed();
-      sendAlert("mouvement");
-      captureAndSave();
+      noTone(BUZZER_PIN);
+      clearAllLeds();
+
+      long alertId = sendAlert("mouvement");
+      captureAndSave(alertId);
+
+      confirmationStartTime = millis();
+      confirmationPending = true;
     }
 
   } else {
     motionStart = 0;
   }
-
-  // déclenche seulement si stable pendant un petit moment
-
-
-  if (mvtReading == HIGH && !motionLock && !alarmActive) {
-
-    delay(100);  // anti faux spike
-    if (digitalRead(PIR_PIN) == HIGH) {
-
-      alarmActive = true;
-      motionLock = true;
-      lastMotionTime = millis();
-
-      Serial.println("MOUVEMENT DETECTÉ");
-
-      alarmOn = true;
-      alarmType = "mouvement";
-      alarmStartTime = millis();
-
-      setAllRed();
-      sendAlert("mouvement");
-      captureAndSave();
-    }
-  }
-
-  if (millis() - lastMotionTime > MOTION_COOLDOWN) {
-    motionLock = false;
-  }
-
   if (alarmOn) {
     alarmSound();
 
-    unsigned long toggleInterval = (alarmType == "feu") ? 150 : 350;
+    unsigned long toggleInterval =
+        (alarmType == "feu") ? 150 : 350;
 
     if (millis() - lastLedToggle >= toggleInterval) {
       lastLedToggle = millis();
       ledState = !ledState;
 
-      if (ledState) setAllRed();
-      else clearAllLeds();
+      if (ledState) {
+        setAllRed();
+      } else {
+        clearAllLeds();
+      }
     }
   }
+
 }

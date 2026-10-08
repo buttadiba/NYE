@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nyeprojet/Screens/nye_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
@@ -24,6 +25,10 @@ class _NyeHomePageState extends State<NyeHomePage> {
     try {
       final response = await http.get(Uri.parse(url));
       print(response.body);
+
+      if (response.statusCode == 200) {
+        nyeEnabled.value = isOn;
+      }
     } catch (e) {
       print("Erreur connexion ESP: $e");
     }
@@ -43,6 +48,7 @@ class _NyeHomePageState extends State<NyeHomePage> {
   @override
   void initState() {
     super.initState();
+    nyeEnabled.addListener(_syncNyeState);
     checkUser();
   }
 
@@ -56,6 +62,17 @@ class _NyeHomePageState extends State<NyeHomePage> {
         MaterialPageRoute(builder: (_) => Connexion()),
       );
     }
+  }
+  void _syncNyeState() {
+    if (!mounted) return;
+    setState(() {
+      _isNyeOpen = nyeEnabled.value;
+    });
+  }
+  @override
+  void dispose() {
+    nyeEnabled.removeListener(_syncNyeState);
+    super.dispose();
   }
 
   int _selectedIndex = 0;
@@ -158,15 +175,8 @@ class _NyeHomePageState extends State<NyeHomePage> {
               // Lorsque l'utilisateur appuie sur le cercle,
               //on inverse l'état de l'œil et on envoie la requête à l'ESP
               onTap: () {
-                bool newState = !_isNyeOpen;
-
-                setState(() {
-                  _isNyeOpen = newState;
-                });
-
-                controlESP(
-                  newState,
-                ); // Envoie la requête à l'ESP pour ouvrir ou fermer l'œil
+                final newState = !_isNyeOpen;
+                controlESP(newState);
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),

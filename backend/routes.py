@@ -19,7 +19,7 @@ def get_db():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",
+        password="adibanoor09",
         database="nye_bd"
     )
 
@@ -176,7 +176,6 @@ def get_alerts():
 
 
 # ADD ALERT (TEST MANUEL)
-
 @routes.route('/add-alert', methods=['POST'])
 def add_alert():
     try:
@@ -184,30 +183,66 @@ def add_alert():
 
         conn = get_db()
         cursor = conn.cursor()
+
         cursor.execute("""
             INSERT INTO alerts (type, title, description, status, created_at)
             VALUES (%s, %s, %s, %s, NOW())
         """, (
             data.get("type", "intrusion"),
-            "Alerte ESP",   # obligatoire
+            "Alerte ESP",
             data.get("description", "test"),
             "En attente"
         ))
 
-    
-
         conn.commit()
+
+        # Récupérer l'ID de l'alerte créée
+        alert_id = cursor.lastrowid
 
         cursor.close()
         conn.close()
 
-        return jsonify({"message": "Alerte ajoutée"}), 201
+        return jsonify({
+            "message": "Alerte ajoutée",
+            "alert_id": alert_id
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@routes.route('/alerts', methods=['POST'])
+def create_alert():
+    try:
+        data = request.get_json() or {}
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO alerts (type, title, description, status, created_at)
+            VALUES (%s, %s, %s, %s, NOW())
+        """, (
+            data.get("type", "mouvement"),
+            data.get("title", "Alerte ESP"),
+            data.get("description", "Détection par le système NYE"),
+            "En attente"
+        ))
+
+        conn.commit()
+        alert_id = cursor.lastrowid
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            "message": "Alerte créée",
+            "alert_id": alert_id
+        }), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
     
-
 app = Flask(__name__)
 @routes.route('/alerts/<int:id>', methods=['PUT'])
 def update_alert(id):
@@ -270,38 +305,66 @@ def link_alert():
     
 import time
 import os
-
 @routes.route('/upload-image', methods=['POST'])
 def upload_image():
     try:
+        # Récupérer l'ID de l'alerte
+        alert_id = request.args.get("alert_id")
+
+        if not alert_id:
+            return jsonify({"error": "alert_id requis"}), 400
+
+        # Vérifier que l'alerte existe
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            "SELECT id FROM alerts WHERE id = %s",
+            (alert_id,)
+        )
+
+        alert = cursor.fetchone()
+
+        if not alert:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Alerte non trouvée"}), 404
+
+        # Récupérer l'image envoyée
         file = request.data
 
+        if not file:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Aucune image reçue"}), 400
+
+        # Sauvegarder l'image
         filename = f"image_{int(time.time())}.jpg"
         filepath = os.path.join("uploads", filename)
 
         with open(filepath, "wb") as f:
             f.write(file)
 
-        # 🔥 IMPORTANT : ajouter dans la base
-        conn = get_db()
-        cursor = conn.cursor()
-
+        # Attacher la photo à l'alerte existante
         cursor.execute("""
-            INSERT INTO alerts (type, title, description, status, photo, created_at)
-            VALUES (%s, %s, %s, %s, %s, NOW())
+            UPDATE alerts
+            SET photo = %s
+            WHERE id = %s
         """, (
-            "camera",
-            "Photo capturée",
-            "Image envoyée par ESP32",
-            "En attente",
-            filename
+            filename,
+            alert_id
         ))
 
         conn.commit()
+
         cursor.close()
         conn.close()
 
-        return jsonify({"message": "Image reçue", "filename": filename}), 200
+        return jsonify({
+            "message": "Image attachée à l'alerte",
+            "alert_id": int(alert_id),
+            "filename": filename
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

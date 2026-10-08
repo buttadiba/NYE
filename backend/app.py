@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 # 🔹 Configuration base de données
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/nye_bd'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:adibanoor09@localhost/nye_bd'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 🔹 Initialisation DB et bcrypt

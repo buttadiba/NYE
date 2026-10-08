@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:nyeprojet/Screens/nye_state.dart';
 
 class AlertDetailPage extends StatefulWidget {
   final Map alert;
@@ -34,7 +35,7 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
     try {
       final response = await http.put(
         Uri.parse(
-          "http://192.168.1.112:5000/alerts/${widget.alert['alert_id']}",
+          "http://192.168.1.38:5000/alerts/${widget.alert['alert_id']}",
         ),
         // headers et body pour la mise à jour du statut
         headers: {"Content-Type": "application/json"},
@@ -59,10 +60,44 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
     }
   }
 
+  Future<void> confirmSelf() async {
+    try {
+      //addresse de l'esp32 pour l'API de confirmation
+      final response = await http
+          .get(Uri.parse("http://192.168.1.113/api/off"))
+          .timeout(const Duration(seconds: 3));
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        nyeEnabled.value = false;
+        await updateStatus("resolved");
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Compte à rebours annulé. NYE est désactivé."),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("L’ESP32 n’a pas accepté la commande.")),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Impossible de joindre l’ESP32. Vérifie le Wi-Fi."),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String imageUrl =
-        "http://192.168.1.112:5000/uploads/${widget.alert['photo']}";
+        "http://192.168.1.38:5000/uploads/${widget.alert['photo']}";
 
     return Scaffold(
       body: CustomScrollView(
@@ -148,6 +183,20 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
                   ),
 
                   const SizedBox(height: 20),
+                  if ((widget.alert['title'] ?? '')
+                      .toString()
+                      .toLowerCase()
+                      .contains('mouvement')) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: confirmSelf,
+                        icon: const Icon(Icons.person),
+                        label: const Text("C’est moi"),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
 
                   /// DESCRIPTION CARD
                   Card(
