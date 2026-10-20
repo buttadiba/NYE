@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nyeprojet/Screens/login.dart';
 import 'package:nyeprojet/Screens/notification_page.dart';
 import 'package:nyeprojet/Screens/urgence.dart';
+import 'package:mjpeg_stream/mjpeg_stream.dart';
 import 'settings_screen.dart'; //
 import '../widgets/nav_bar.dart';
 import 'package:http/http.dart' as http;
@@ -19,8 +20,8 @@ class _NyeHomePageState extends State<NyeHomePage> {
   // Pour contrôler l'ESP (API) active ou désactivée
   Future<void> controlESP(bool isOn) async {
     final url = isOn
-        ? "http://192.168.1.113/api/on"
-        : "http://192.168.1.113/api/off";
+        ? "http://192.168.1.20/api/on"
+        : "http://192.168.1.20/api/off";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -63,12 +64,14 @@ class _NyeHomePageState extends State<NyeHomePage> {
       );
     }
   }
+
   void _syncNyeState() {
     if (!mounted) return;
     setState(() {
       _isNyeOpen = nyeEnabled.value;
     });
   }
+
   @override
   void dispose() {
     nyeEnabled.removeListener(_syncNyeState);
@@ -205,7 +208,27 @@ class _NyeHomePageState extends State<NyeHomePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
+
+            Container(
+              width: double.infinity,
+              height: 220,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: MJPEGStreamScreen(
+                //l'url de la caméra MJPEG de l'ESP
+                streamUrl: 'http://192.168.1.20:81/stream',
+                width: double.infinity,
+                height: 220,
+                fit: BoxFit.cover,
+                showLiveIcon: true,
+              ),
+            ),
+
+            const SizedBox(height: 20),
             _buildBatteryPercentageCard(),
             const SizedBox(height: 20),
             _buildBatteryOptimizationCard(),

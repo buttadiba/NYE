@@ -27,8 +27,11 @@ const unsigned long MOTION_COOLDOWN = 30000;
 
 // CONFIGURATION DU RÉSEAU WIFI
 
-const char* ssid = "Orange-6B6F";
-const char* password = "Y9H2G25H4MH";
+//const char* ssid = "Orange-6B6F";
+//const char* password = "Y9H2G25H4MH";
+const char* ssid = "mujeeb";
+const char* password = "muddassar2017";
+
 
 // ==========================================
 // CONFIGURATION DES BROCHES
@@ -122,6 +125,8 @@ void connectWiFi() {
     Serial.println("\nConnecté !");
     Serial.print("IP ESP: ");
     Serial.println(WiFi.localIP());
+    Serial.print("Adresse MAC ESP: ");
+    Serial.println(WiFi.macAddress());
   } else {
     Serial.println("\nÉchec WiFi : Mode local activé.");
   }

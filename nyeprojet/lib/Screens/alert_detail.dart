@@ -64,7 +64,7 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
     try {
       //addresse de l'esp32 pour l'API de confirmation
       final response = await http
-          .get(Uri.parse("http://192.168.1.113/api/off"))
+          .get(Uri.parse("http://192.168.1.20/api/off"))
           .timeout(const Duration(seconds: 3));
 
       if (!mounted) return;
