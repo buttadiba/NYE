@@ -45,8 +45,10 @@ class _InscriptionState extends State<Inscription> {
       });
       return;
     }
+    //adresse du backend pour l'inscription
+    //a changer 🫡🫡🫡🫡🫡🫡
 
-    var url = "http://192.168.1.38:5000/register";
+    var url = "http://192.168.1.12:5000/register";
 
     try {
       final response = await http.post(

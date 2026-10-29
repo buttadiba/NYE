@@ -20,8 +20,10 @@ class _NyeHomePageState extends State<NyeHomePage> {
   // Pour contrôler l'ESP (API) active ou désactivée
   Future<void> controlESP(bool isOn) async {
     final url = isOn
-        ? "http://192.168.1.20/api/on"
-        : "http://192.168.1.20/api/off";
+        //a cahngerrrrrrrrrrrrrrrrrrr
+        //addresse ip de l'ESP
+        ? "http://192.168.1.25/api/on"
+        : "http://192.168.1.25/api/off";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -219,8 +221,10 @@ class _NyeHomePageState extends State<NyeHomePage> {
               ),
               clipBehavior: Clip.antiAlias,
               child: MJPEGStreamScreen(
+                //a changerrrrrrrrrrrrrrrrrrrr
                 //l'url de la caméra MJPEG de l'ESP
-                streamUrl: 'http://192.168.1.20:81/stream',
+                // a changer 🫡🫡🫡🫡🫡🫡
+                streamUrl: 'http://192.168.1.25:81/stream',
                 width: double.infinity,
                 height: 220,
                 fit: BoxFit.cover,

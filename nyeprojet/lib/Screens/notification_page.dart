@@ -40,7 +40,7 @@ class _AlertPageState extends State<AlertPage> {
   @override
   void initState() {
     super.initState();
-    
+
     fetchAlerts(showLoader: true);
     timer = Timer.periodic(
       const Duration(seconds: 2),
@@ -55,15 +55,17 @@ class _AlertPageState extends State<AlertPage> {
   }
 
   Future<void> fetchAlerts({bool showLoader = false}) async {
-  if (showLoader) {
-    setState(() {
-      isLoading = true;
-    });
-  }
+    if (showLoader) {
+      setState(() {
+        isLoading = true;
+      });
+    }
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.38:5000/alerts'),
+        //a changer 🫡🫡🫡🫡🫡🫡
+        //addresse du backend pour récupérer les alertes
+        Uri.parse('http://192.168.1.12:5000/alerts'),
       );
 
       print("RAW: ${response.body}");

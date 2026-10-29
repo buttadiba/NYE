@@ -35,7 +35,9 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
     try {
       final response = await http.put(
         Uri.parse(
-          "http://192.168.1.38:5000/alerts/${widget.alert['alert_id']}",
+          // a chnager 🫡🫡🫡🫡🫡🫡
+          // addresse du backend pour la mise à jour du statut de l'alerte
+          "http://192.168.1.12:5000/alerts/${widget.alert['alert_id']}",
         ),
         // headers et body pour la mise à jour du statut
         headers: {"Content-Type": "application/json"},
@@ -63,8 +65,9 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
   Future<void> confirmSelf() async {
     try {
       //addresse de l'esp32 pour l'API de confirmation
+      // a changer 🫡🫡🫡🫡🫡🫡
       final response = await http
-          .get(Uri.parse("http://192.168.1.20/api/off"))
+          .get(Uri.parse("http://192.168.1.25/api/off"))
           .timeout(const Duration(seconds: 3));
 
       if (!mounted) return;
@@ -97,7 +100,9 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
   @override
   Widget build(BuildContext context) {
     final String imageUrl =
-        "http://192.168.1.38:5000/uploads/${widget.alert['photo']}";
+    //a changer 🫡🫡🫡🫡🫡🫡
+    //adresse du backend pour récupérer l'image de l'alerte
+        "http://192.168.1.12:5000/uploads/${widget.alert['photo']}";
 
     return Scaffold(
       body: CustomScrollView(

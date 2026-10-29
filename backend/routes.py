@@ -121,6 +121,8 @@ def map_alert_title(alert_type):
         return "Caméra déclenchée"
     elif "urgence" in alert_type:
         return "Alerte d'urgence"
+    elif "feu" in alert_type or "flamme" in alert_type:
+        return "Feu détecté 🔥"
     else:
         return "Alerte système"
 

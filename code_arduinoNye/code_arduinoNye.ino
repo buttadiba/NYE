@@ -16,6 +16,7 @@ bool pirReady = false;
 unsigned long pirStartTime = 0;
 int lastMvtState = LOW;
 bool alarmActive = false;
+
 bool motionLock = false;
 bool flameLock = false;
 bool confirmationPending = false;
